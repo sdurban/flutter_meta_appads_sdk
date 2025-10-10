@@ -14,20 +14,21 @@ PlatformException _createConnectionError(String channelName) {
     message: 'Unable to establish connection on channel: "$channelName".',
   );
 }
+
 bool _deepEquals(Object? a, Object? b) {
   if (a is List && b is List) {
     return a.length == b.length &&
         a.indexed
-        .every(((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]));
+            .every(((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]));
   }
   if (a is Map && b is Map) {
-    return a.length == b.length && a.entries.every((MapEntry<Object?, Object?> entry) =>
-        (b as Map<Object?, Object?>).containsKey(entry.key) &&
-        _deepEquals(entry.value, b[entry.key]));
+    return a.length == b.length &&
+        a.entries.every((MapEntry<Object?, Object?> entry) =>
+            (b as Map<Object?, Object?>).containsKey(entry.key) &&
+            _deepEquals(entry.value, b[entry.key]));
   }
   return a == b;
 }
-
 
 enum FBStandardEvent {
   adClick,
@@ -106,13 +107,15 @@ class FBLogEventRequest {
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static FBLogEventRequest decode(Object result) {
     result as List<Object?>;
     return FBLogEventRequest(
       eventName: result[0]! as String,
-      eventParameters: (result[1] as Map<Object?, Object?>?)!.cast<String, String>(),
+      eventParameters:
+          (result[1] as Map<Object?, Object?>?)!.cast<String, String>(),
     );
   }
 
@@ -130,8 +133,7 @@ class FBLogEventRequest {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 class FBLogPurchaseRequest {
@@ -156,14 +158,16 @@ class FBLogPurchaseRequest {
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static FBLogPurchaseRequest decode(Object result) {
     result as List<Object?>;
     return FBLogPurchaseRequest(
       amount: result[0]! as double,
       currency: result[1]! as String,
-      eventParameter: (result[2] as Map<Object?, Object?>?)!.cast<String, String>(),
+      eventParameter:
+          (result[2] as Map<Object?, Object?>?)!.cast<String, String>(),
     );
   }
 
@@ -181,8 +185,7 @@ class FBLogPurchaseRequest {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 class FBStandardEventParameter {
@@ -203,7 +206,8 @@ class FBStandardEventParameter {
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static FBStandardEventParameter decode(Object result) {
     result as List<Object?>;
@@ -216,7 +220,8 @@ class FBStandardEventParameter {
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! FBStandardEventParameter || other.runtimeType != runtimeType) {
+    if (other is! FBStandardEventParameter ||
+        other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -227,8 +232,7 @@ class FBStandardEventParameter {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 class FBLogStandardEventRequest {
@@ -249,20 +253,23 @@ class FBLogStandardEventRequest {
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static FBLogStandardEventRequest decode(Object result) {
     result as List<Object?>;
     return FBLogStandardEventRequest(
       eventName: result[0]! as FBStandardEvent,
-      parameters: (result[1] as List<Object?>?)!.cast<FBStandardEventParameter>(),
+      parameters:
+          (result[1] as List<Object?>?)!.cast<FBStandardEventParameter>(),
     );
   }
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! FBLogStandardEventRequest || other.runtimeType != runtimeType) {
+    if (other is! FBLogStandardEventRequest ||
+        other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -273,8 +280,7 @@ class FBLogStandardEventRequest {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 class FBSetUserDataRequest {
@@ -295,7 +301,8 @@ class FBSetUserDataRequest {
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static FBSetUserDataRequest decode(Object result) {
     result as List<Object?>;
@@ -319,8 +326,7 @@ class FBSetUserDataRequest {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 class FBSetDataProcessingOptionsRequest {
@@ -345,7 +351,8 @@ class FBSetDataProcessingOptionsRequest {
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static FBSetDataProcessingOptionsRequest decode(Object result) {
     result as List<Object?>;
@@ -359,7 +366,8 @@ class FBSetDataProcessingOptionsRequest {
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! FBSetDataProcessingOptionsRequest || other.runtimeType != runtimeType) {
+    if (other is! FBSetDataProcessingOptionsRequest ||
+        other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -370,8 +378,7 @@ class FBSetDataProcessingOptionsRequest {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
 
 class FBAnonIdResponse {
@@ -388,7 +395,8 @@ class FBAnonIdResponse {
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static FBAnonIdResponse decode(Object result) {
     result as List<Object?>;
@@ -411,10 +419,8 @@ class FBAnonIdResponse {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList())
-;
+  int get hashCode => Object.hashAll(_toList());
 }
-
 
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
@@ -423,34 +429,34 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    }    else if (value is FBStandardEvent) {
+    } else if (value is FBStandardEvent) {
       buffer.putUint8(129);
       writeValue(buffer, value.index);
-    }    else if (value is FBStandardParameter) {
+    } else if (value is FBStandardParameter) {
       buffer.putUint8(130);
       writeValue(buffer, value.index);
-    }    else if (value is FBUserDataType) {
+    } else if (value is FBUserDataType) {
       buffer.putUint8(131);
       writeValue(buffer, value.index);
-    }    else if (value is FBLogEventRequest) {
+    } else if (value is FBLogEventRequest) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
-    }    else if (value is FBLogPurchaseRequest) {
+    } else if (value is FBLogPurchaseRequest) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
-    }    else if (value is FBStandardEventParameter) {
+    } else if (value is FBStandardEventParameter) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
-    }    else if (value is FBLogStandardEventRequest) {
+    } else if (value is FBLogStandardEventRequest) {
       buffer.putUint8(135);
       writeValue(buffer, value.encode());
-    }    else if (value is FBSetUserDataRequest) {
+    } else if (value is FBSetUserDataRequest) {
       buffer.putUint8(136);
       writeValue(buffer, value.encode());
-    }    else if (value is FBSetDataProcessingOptionsRequest) {
+    } else if (value is FBSetDataProcessingOptionsRequest) {
       buffer.putUint8(137);
       writeValue(buffer, value.encode());
-    }    else if (value is FBAnonIdResponse) {
+    } else if (value is FBAnonIdResponse) {
       buffer.putUint8(138);
       writeValue(buffer, value.encode());
     } else {
@@ -461,28 +467,28 @@ class _PigeonCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 129: 
+      case 129:
         final int? value = readValue(buffer) as int?;
         return value == null ? null : FBStandardEvent.values[value];
-      case 130: 
+      case 130:
         final int? value = readValue(buffer) as int?;
         return value == null ? null : FBStandardParameter.values[value];
-      case 131: 
+      case 131:
         final int? value = readValue(buffer) as int?;
         return value == null ? null : FBUserDataType.values[value];
-      case 132: 
+      case 132:
         return FBLogEventRequest.decode(readValue(buffer)!);
-      case 133: 
+      case 133:
         return FBLogPurchaseRequest.decode(readValue(buffer)!);
-      case 134: 
+      case 134:
         return FBStandardEventParameter.decode(readValue(buffer)!);
-      case 135: 
+      case 135:
         return FBLogStandardEventRequest.decode(readValue(buffer)!);
-      case 136: 
+      case 136:
         return FBSetUserDataRequest.decode(readValue(buffer)!);
-      case 137: 
+      case 137:
         return FBSetDataProcessingOptionsRequest.decode(readValue(buffer)!);
-      case 138: 
+      case 138:
         return FBAnonIdResponse.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -494,9 +500,11 @@ class FlutterMetaAppadsSdkHostApi {
   /// Constructor for [FlutterMetaAppadsSdkHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  FlutterMetaAppadsSdkHostApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
+  FlutterMetaAppadsSdkHostApi(
+      {BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
       : pigeonVar_binaryMessenger = binaryMessenger,
-        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+        pigeonVar_messageChannelSuffix =
+            messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
   final BinaryMessenger? pigeonVar_binaryMessenger;
 
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
@@ -504,13 +512,16 @@ class FlutterMetaAppadsSdkHostApi {
   final String pigeonVar_messageChannelSuffix;
 
   Future<void> initSdk(bool enableLogging) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.initSdk$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.initSdk$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[enableLogging]);
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[enableLogging]);
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
@@ -527,13 +538,16 @@ class FlutterMetaAppadsSdkHostApi {
   }
 
   Future<void> setUserData(FBSetUserDataRequest request) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.setUserData$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.setUserData$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[request]);
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[request]);
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
@@ -550,13 +564,16 @@ class FlutterMetaAppadsSdkHostApi {
   }
 
   Future<void> logStandardEvent(FBLogStandardEventRequest request) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.logStandardEvent$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.logStandardEvent$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[request]);
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[request]);
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
@@ -573,13 +590,16 @@ class FlutterMetaAppadsSdkHostApi {
   }
 
   Future<void> logPurchase(FBLogPurchaseRequest request) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.logPurchase$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.logPurchase$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[request]);
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[request]);
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
@@ -596,13 +616,16 @@ class FlutterMetaAppadsSdkHostApi {
   }
 
   Future<void> logEvents(FBLogEventRequest request) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.logEvents$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.logEvents$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[request]);
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[request]);
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
@@ -619,8 +642,10 @@ class FlutterMetaAppadsSdkHostApi {
   }
 
   Future<FBAnonIdResponse?> getFbAnonId() async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.getFbAnonId$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.getFbAnonId$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
@@ -642,13 +667,16 @@ class FlutterMetaAppadsSdkHostApi {
   }
 
   Future<void> setAdvertiserTrackingEnabled(bool isEnabled) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.setAdvertiserTrackingEnabled$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.setAdvertiserTrackingEnabled$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[isEnabled]);
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[isEnabled]);
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
@@ -665,13 +693,16 @@ class FlutterMetaAppadsSdkHostApi {
   }
 
   Future<void> setAdvertiserIDCollectionEnabled(bool isEnabled) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.setAdvertiserIDCollectionEnabled$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.setAdvertiserIDCollectionEnabled$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[isEnabled]);
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[isEnabled]);
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
@@ -688,13 +719,16 @@ class FlutterMetaAppadsSdkHostApi {
   }
 
   Future<void> setAutoLogAppEventsEnabled(bool isEnabled) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.setAutoLogAppEventsEnabled$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.setAutoLogAppEventsEnabled$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[isEnabled]);
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[isEnabled]);
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
@@ -710,14 +744,18 @@ class FlutterMetaAppadsSdkHostApi {
     }
   }
 
-  Future<void> setDataProcessingOptions(FBSetDataProcessingOptionsRequest request) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.setDataProcessingOptions$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+  Future<void> setDataProcessingOptions(
+      FBSetDataProcessingOptionsRequest request) async {
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.flutter_meta_appads_sdk.FlutterMetaAppadsSdkHostApi.setDataProcessingOptions$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[request]);
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[request]);
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
