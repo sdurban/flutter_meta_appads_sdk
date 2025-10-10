@@ -1,3 +1,8 @@
+### 2.0.1
+
+* Fix missing format on different files (fixinig pub points on pub.dev).
+
+
 ### 2.0.0
 
 * **BREAKING CHANGE**: Migrated from protobuf to Pigeon for better type safety and performance

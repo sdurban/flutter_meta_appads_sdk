@@ -31,8 +31,9 @@ class ObjectsToPigeonCommunications {
     );
   }
 
-  static pigeon.FBSetDataProcessingOptionsRequest setDataProcessingCommandToPigeon(
-      FBSetDataProcessingOptionsCommand command) {
+  static pigeon.FBSetDataProcessingOptionsRequest
+      setDataProcessingCommandToPigeon(
+          FBSetDataProcessingOptionsCommand command) {
     return pigeon.FBSetDataProcessingOptionsRequest(
       modes: command.modes,
       country: command.country,

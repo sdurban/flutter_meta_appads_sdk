@@ -20,8 +20,7 @@ class MethodChannelFlutterMetaAppadsSdk extends FlutterMetaAppadsSdkPlatform {
   }
 
   @override
-  Future<void> logStandardEvent(
-      FBLogStandardEventRequest request) async {
+  Future<void> logStandardEvent(FBLogStandardEventRequest request) async {
     await api.logStandardEvent(request);
   }
 
