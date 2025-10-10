@@ -2,12 +2,12 @@ import FBSDKCoreKit
 import Flutter
 import UIKit
 
-public class FlutterMetaAppadsSdkPlugin: NSObject, FlutterPlugin {
+public class FlutterMetaAppadsSdkPlugin: NSObject, FlutterPlugin, FlutterMetaAppadsSdkHostApi {
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let channel = FlutterMethodChannel(name: "flutter_meta_appads_sdk", binaryMessenger: registrar.messenger())
         let instance = FlutterMetaAppadsSdkPlugin()
-
-        registrar.addMethodCallDelegate(instance, channel: channel)
+        
+        FlutterMetaAppadsSdkHostApiSetup.setUp(binaryMessenger: registrar.messenger(), api: instance)
+        
         registrar.addApplicationDelegate(instance)
     }
 
@@ -28,92 +28,62 @@ public class FlutterMetaAppadsSdkPlugin: NSObject, FlutterPlugin {
         return false
     }
 
-    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        switch call.method {
-        case "initSdk":
-            if let args = call.arguments as? [String: Any],
-               let enableLogging = args["enableLogging"] as? Bool {
-                loggingEnabled = enableLogging
-            }
-
-            initSdk()
-            result(nil)
-        case "logEvents":
-            if let data = call.arguments as? FlutterStandardTypedData,
-               let request = try? FBLogEventMessageRequest(serializedBytes: data.data) {
-                logEvent(request.eventName, parameters: request.eventParameter)
-            }
-            result(nil)
-        case "logPurchase":
-            if let data = call.arguments as? FlutterStandardTypedData,
-               let request = try? FBLogPurchaseMessageRequest(serializedBytes: data.data) {
-                logPurchase(request.amount, currency: request.currency, parameters: request.eventParameter)
-            }
-            result(nil)
-        case "logStandardEvent":
-            if let data = call.arguments as? FlutterStandardTypedData,
-               let request = try? FBLogStandardEventMessageRequest(serializedBytes: data.data) {
-                logEvent(request.eventName, parameters: request.eventParameter)
-            }
-            result(nil)
-        case "setUserData":
-            if let data = call.arguments as? FlutterStandardTypedData,
-               let request = try? FBSetUserDataRequest(serializedBytes: data.data) {
-                setUserData(request.value, forType: request.type)
-            }
-            result(nil)
-        case "getFbAnonId":
-            let response = FBAnonIdResponse.with({
-                $0.fbAnonID = AppEvents.shared.anonymousID
-            })
-            let data = try? response.serializedData()
-
-            result(data)
-        case "setAdvertiserTrackingEnabled":
-            if let args = call.arguments as? [String: Any],
-               let isEnabled = args["isEnabled"] as? Bool {
-                Settings.shared.isAdvertiserTrackingEnabled = isEnabled
-
-                if loggingEnabled {
-                    print("FBSDKLog: TRACKING ENABLED \(Settings.shared.isAdvertiserTrackingEnabled)")
-                }
-            }
-
-            result(nil)
-        case "setAdvertiserIDCollectionEnabled":
-            if let args = call.arguments as? [String: Any],
-               let isEnabled = args["isEnabled"] as? Bool {
-                Settings.shared.isAdvertiserIDCollectionEnabled = isEnabled
-
-                if loggingEnabled {
-                    print("FBSDKLog: IDFA COLLECTION \(Settings.shared.isAdvertiserIDCollectionEnabled)")
-                }
-            }
-
-            result(nil)
-        case "setAutoLogAppEventsEnabled":
-            if let args = call.arguments as? [String: Any],
-               let isEnabled = args["isEnabled"] as? Bool {
-                Settings.shared.isAutoLogAppEventsEnabled = isEnabled
-
-                if loggingEnabled {
-                    print("FBSDKLog: AUTOMATIC EVENT COLLECTION \(Settings.shared.isAutoLogAppEventsEnabled)")
-                }
-            }
-
-            result(nil)
-        case "setDataProcessingOptions":
-            if let data = call.arguments as? FlutterStandardTypedData,
-               let request = try? FBSetDataProcessingOptionsRequest(serializedBytes: data.data) {
-                if request.optionalState != nil && request.optionalCountry != nil {
-                    Settings.shared.setDataProcessingOptions(request.modes, country: request.country, state: request.state)
-                } else {
-                    Settings.shared.setDataProcessingOptions(request.modes)
-                }
-            }
-            result(nil)
-        default:
-            result(FlutterMethodNotImplemented)
+    // MARK: - FlutterMetaAppadsSdkHostApi Implementation
+    
+    func initSdk(enableLogging: Bool) throws {
+        loggingEnabled = enableLogging
+        initSdk()
+    }
+    
+    func setUserData(request: FBSetUserDataRequest) throws {
+        setUserData(request.value, forType: request.type)
+    }
+    
+    func logStandardEvent(request: FBLogStandardEventRequest) throws {
+        logEvent(request.eventName, parameters: request.parameters)
+    }
+    
+    func logPurchase(request: FBLogPurchaseRequest) throws {
+        logPurchase(request.amount, currency: request.currency, parameters: request.eventParameter)
+    }
+    
+    func logEvents(request: FBLogEventRequest) throws {
+        logEvent(request.eventName, parameters: request.eventParameters)
+    }
+    
+    func getFbAnonId() throws -> FBAnonIdResponse? {
+        return FBAnonIdResponse(fbAnonId: AppEvents.shared.anonymousID)
+    }
+    
+    func setAdvertiserTrackingEnabled(isEnabled: Bool) throws {
+        Settings.shared.isAdvertiserTrackingEnabled = isEnabled
+        
+        if loggingEnabled {
+            print("FBSDKLog: TRACKING ENABLED \(Settings.shared.isAdvertiserTrackingEnabled)")
+        }
+    }
+    
+    func setAdvertiserIDCollectionEnabled(isEnabled: Bool) throws {
+        Settings.shared.isAdvertiserIDCollectionEnabled = isEnabled
+        
+        if loggingEnabled {
+            print("FBSDKLog: IDFA COLLECTION \(Settings.shared.isAdvertiserIDCollectionEnabled)")
+        }
+    }
+    
+    func setAutoLogAppEventsEnabled(isEnabled: Bool) throws {
+        Settings.shared.isAutoLogAppEventsEnabled = isEnabled
+        
+        if loggingEnabled {
+            print("FBSDKLog: AUTOMATIC EVENT COLLECTION \(Settings.shared.isAutoLogAppEventsEnabled)")
+        }
+    }
+    
+    func setDataProcessingOptions(request: FBSetDataProcessingOptionsRequest) throws {
+        if let country = request.country, let state = request.state {
+            Settings.shared.setDataProcessingOptions(request.modes, country: Int32(country), state: Int32(state))
+        } else {
+            Settings.shared.setDataProcessingOptions(request.modes)
         }
     }
 
@@ -152,8 +122,8 @@ public class FlutterMetaAppadsSdkPlugin: NSObject, FlutterPlugin {
         )
     }
 
-    private func logEvent(_ eventName: FBStandardEvents, parameters: [FBDefaultParameter]) {
-        if let appEventName = protoEnumToEventName(eventName) {
+    private func logEvent(_ eventName: FBStandardEvent, parameters: [FBStandardEventParameter]) {
+        if let appEventName = pigeonEnumToEventName(eventName) {
             AppEvents.shared.logEvent(
                 appEventName,
                 parameters: convertStandardParametersToFbParameters(parameters)
@@ -170,7 +140,7 @@ public class FlutterMetaAppadsSdkPlugin: NSObject, FlutterPlugin {
     }
 
     private func setUserData(_ data: String?, forType: FBUserDataType) {
-        if let forType = protoEnumToFBSDKAppEventUserDataType(forType) {
+        if let forType = pigeonEnumToFBSDKAppEventUserDataType(forType) {
             AppEvents.shared.setUserData(data, forType: forType)
 
             print("FBSDKLog: TRACKING ENABLED \(Settings.shared.isAdvertiserTrackingEnabled)")
@@ -189,11 +159,11 @@ extension FlutterMetaAppadsSdkPlugin {
         return fbParameters
     }
 
-    fileprivate func convertStandardParametersToFbParameters(_ parameters: [FBDefaultParameter]) -> [AppEvents.ParameterName: String] {
+    fileprivate func convertStandardParametersToFbParameters(_ parameters: [FBStandardEventParameter]) -> [AppEvents.ParameterName: String] {
         var fbParameters: [AppEvents.ParameterName: String] = [:]
 
         for parameter in parameters {
-            if let parameterName = protoEnumToEventParameter(parameter.parameterName) {
+            if let parameterName = pigeonEnumToEventParameter(parameter.parameterName) {
                 fbParameters[parameterName] = parameter.value
             }
         }
@@ -205,7 +175,7 @@ extension FlutterMetaAppadsSdkPlugin {
 // MARK: - Convert enums to SDK Values
 
 extension FlutterMetaAppadsSdkPlugin {
-    fileprivate func protoEnumToEventName(_ eventName: FBStandardEvents) -> AppEvents.Name? {
+    fileprivate func pigeonEnumToEventName(_ eventName: FBStandardEvent) -> AppEvents.Name? {
         switch eventName {
         case .achievedLevel:
             return AppEvents.Name.achievedLevel
@@ -253,12 +223,10 @@ extension FlutterMetaAppadsSdkPlugin {
             return AppEvents.Name.unlockedAchievement
         case .spentCredits:
             return AppEvents.Name.spentCredits
-        case .UNRECOGNIZED:
-            return nil
         }
     }
 
-    fileprivate func protoEnumToEventParameter(_ eventParameter: FBStandardParameters) -> AppEvents.ParameterName? {
+    fileprivate func pigeonEnumToEventParameter(_ eventParameter: FBStandardParameter) -> AppEvents.ParameterName? {
         switch eventParameter {
         case .parameterNameContent:
             return .content
@@ -292,12 +260,10 @@ extension FlutterMetaAppadsSdkPlugin {
             return .eventName
         case .parameterNameLogTime:
             return .logTime
-        case .UNRECOGNIZED:
-            return nil
         }
     }
 
-    fileprivate func protoEnumToFBSDKAppEventUserDataType(_ type: FBUserDataType) -> FBSDKAppEventUserDataType? {
+    fileprivate func pigeonEnumToFBSDKAppEventUserDataType(_ type: FBUserDataType) -> FBSDKAppEventUserDataType? {
         switch type {
         case .email:
             return .email
@@ -319,10 +285,8 @@ extension FlutterMetaAppadsSdkPlugin {
             return .zip
         case .country:
             return .country
-        case .externalID:
+        case .externalId:
             return .externalId
-        case .UNRECOGNIZED:
-            return nil
         }
     }
 }

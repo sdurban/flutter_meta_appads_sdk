@@ -1,3 +1,19 @@
+### 2.0.0
+
+* **BREAKING CHANGE**: Migrated from protobuf to Pigeon for better type safety and performance
+* Removed protobuf dependency and all related files
+* Improved communication between Flutter and native platforms
+* Better error handling and type safety
+* Maintained backward compatibility for public API
+* Updated build system to use Pigeon code generation
+* Fixed currency handling in logPurchase for Android
+* Added eventParameter support in logPurchase for both platforms
+* Added full support for externalId (FBUserDataType.externalId) on Android platform for advanced matching and cross-device tracking
+* Improved logging and error messages
+* Meta SDK versions:
+  * Android: Facebook SDK 18.1.3
+  * iOS: FBSDKCoreKit 18.0.1
+
 ### 1.2.0
 
 * Added `setAutoLogAppEventsEnabled` please refer to [Meta Guidelines](https://developers.facebook.com/docs/app-events/automatic-event-collection-detail/) on this function. (Thanks to @Gramatton)

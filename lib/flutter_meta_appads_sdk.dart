@@ -1,4 +1,4 @@
-import 'package:flutter_meta_appads_sdk/objects/objects_to_proto_communications.dart';
+import 'package:flutter_meta_appads_sdk/objects/objects_to_pigeon_communications.dart';
 
 import 'flutter_meta_appads_sdk_platform_interface.dart';
 import 'objects/fb_log_event_command.dart';
@@ -43,7 +43,7 @@ class FlutterMetaAppAdsSdk {
     FBSetUserDataCommand command,
   ) {
     return FlutterMetaAppadsSdkPlatform.instance.setUserData(
-      ObjectsToProtoCommunications.setUserDataCommandToProto(command),
+      ObjectsToPigeonCommunications.setUserDataCommandToPigeon(command),
     );
   }
 
@@ -62,7 +62,7 @@ class FlutterMetaAppAdsSdk {
     FBLogStandardEventCommand command,
   ) {
     return FlutterMetaAppadsSdkPlatform.instance.logStandardEvent(
-      ObjectsToProtoCommunications.logStandardEventCommandToProto(command),
+      ObjectsToPigeonCommunications.logStandardEventCommandToPigeon(command),
     );
   }
 
@@ -77,7 +77,7 @@ class FlutterMetaAppAdsSdk {
     FBLogPurchaseCommand command,
   ) {
     return FlutterMetaAppadsSdkPlatform.instance.logPurchase(
-      ObjectsToProtoCommunications.logPurchaseCommandToProto(command),
+      ObjectsToPigeonCommunications.logPurchaseCommandToPigeon(command),
     );
   }
 
@@ -96,7 +96,7 @@ class FlutterMetaAppAdsSdk {
     FBLogEventCommand command,
   ) {
     return FlutterMetaAppadsSdkPlatform.instance.logEvents(
-      ObjectsToProtoCommunications.logEventCommandToProto(command),
+      ObjectsToPigeonCommunications.logEventCommandToPigeon(command),
     );
   }
 
@@ -189,7 +189,7 @@ class FlutterMetaAppAdsSdk {
     FBSetDataProcessingOptionsCommand command,
   ) {
     return FlutterMetaAppadsSdkPlatform.instance.setDataProcessingOptions(
-      ObjectsToProtoCommunications.setDataProcessingCommandToProto(command),
+      ObjectsToPigeonCommunications.setDataProcessingCommandToPigeon(command),
     );
   }
 }

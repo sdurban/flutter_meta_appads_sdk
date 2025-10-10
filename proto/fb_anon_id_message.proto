@@ -1,6 +1,0 @@
-syntax = "proto3";
-option java_package = "cat.durban.sergio.flutter_meta_appads_sdk.proto";
-
-message FBAnonIdResponse {
-  string fbAnonId = 1;
-}

@@ -2,6 +2,10 @@
 
 This Flutter plugin provides a simple interface to interact with the Meta SDK. It allows you to initialize the SDK, set user data, log standard events, log purchases, and log custom events.
 
+## 🚀 Migrated to Pigeon
+
+This plugin has been migrated from protobuf to [Pigeon](https://pub.dev/packages/pigeon) for better type safety, performance, and maintainability. The public API remains unchanged, ensuring backward compatibility.
+
 ### Installation
 You must first create an app at Facebook developers: https://developers.facebook.com/
 
@@ -97,9 +101,11 @@ Get your *app id* and *client token* from [Meta Developers Panel](https://develo
 
 * Initialization: `initSdk()` sets up the SDK.
 * User Data: `setUserData(FBSetUserDataCommand)` provides user information for targeted ads.
+  * **Supported data types**: email, firstName, lastName, phone, dateOfBirth, gender, city, state, zip, country, and **externalId**
+  * **ExternalId support**: Available on both iOS and Android platforms. Use `FBUserDataType.externalId` to set a custom user identifier for advanced matching and cross-device tracking.
 * Event Tracking:
   * `logStandardEvent(FBLogStandardEventCommand)`: Tracks standard events (e.g., level up).
-  * `logPurchase(FBLogPurchaseCommand)`: Records purchase events.
+  * `logPurchase(FBLogPurchaseCommand)`: Records purchase events with amount, currency, and additional parameters.
   * `logEvents(FBLogEventCommand)`: Logs custom events.
 * Anonymous ID: `getFbAnonId()` retrieves the Facebook Anonymous ID.
 * Tracking permissions:
@@ -107,6 +113,11 @@ Get your *app id* and *client token* from [Meta Developers Panel](https://develo
   * `setAdvertiserIDCollectionEnabled(bool)`: _Only for iOS (lower than iOS 17)_ Use with ATT permissions request, set to `True` when user allows and `False` when disallows.
   * `setAutoLogAppEventsEnabled(bool)`: This function enables or disables automatic logging of common mobile events from the app like app installs, in-app purchases and app launches.
   * `setDataProcessingOptions(FBSetDataProcessingOptionsCommand)`: This function allows you to configure various data processing options, including data usage and sharing preferences, for the Meta App Ads SDK. Refer to [Meta Documentation](https://developers.facebook.com/docs/app-events/guides/data-processing-options)
+
+### SDK Versions
+
+* **Android**: Facebook SDK 18.1.3
+* **iOS**: FBSDKCoreKit 18.0.1
 
 
 ### About Meta SDK

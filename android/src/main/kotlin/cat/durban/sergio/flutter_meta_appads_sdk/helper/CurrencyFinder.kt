@@ -1,3 +1,5 @@
+package cat.durban.sergio.flutter_meta_appads_sdk.helper
+
 import java.util.Currency
 import java.util.Optional
 

@@ -1,4 +1,6 @@
-import cat.durban.sergio.flutter_meta_appads_sdk.proto.SetUserDataMessage
+package cat.durban.sergio.flutter_meta_appads_sdk.helper
+
+import cat.durban.sergio.flutter_meta_appads_sdk.FBUserDataType
 
 object FBUserData {
     var email: String? = null
@@ -12,20 +14,21 @@ object FBUserData {
     var zipCode: String? = null
     var country: String? = null
 
-    fun populateFromProto(key: SetUserDataMessage.FBUserDataType, value: String) {
+    var externalId: String? = null
+
+    fun populateFromPigeon(key: FBUserDataType, value: String) {
         when (key) {
-            SetUserDataMessage.FBUserDataType.Email -> email = value
-            SetUserDataMessage.FBUserDataType.FirstName -> firstName = value
-            SetUserDataMessage.FBUserDataType.LastName -> lastName = value
-            SetUserDataMessage.FBUserDataType.Phone -> phone = value
-            SetUserDataMessage.FBUserDataType.DateOfBirth -> birthDate = value
-            SetUserDataMessage.FBUserDataType.Gender -> gender = value
-            SetUserDataMessage.FBUserDataType.City -> city = value
-            SetUserDataMessage.FBUserDataType.State -> state = value
-            SetUserDataMessage.FBUserDataType.Zip -> zipCode = value
-            SetUserDataMessage.FBUserDataType.Country -> country = value
-            SetUserDataMessage.FBUserDataType.ExternalId -> {}
-            SetUserDataMessage.FBUserDataType.UNRECOGNIZED -> {}
+            FBUserDataType.EMAIL -> email = value
+            FBUserDataType.FIRST_NAME -> firstName = value
+            FBUserDataType.LAST_NAME -> lastName = value
+            FBUserDataType.PHONE -> phone = value
+            FBUserDataType.DATE_OF_BIRTH -> birthDate = value
+            FBUserDataType.GENDER -> gender = value
+            FBUserDataType.CITY -> city = value
+            FBUserDataType.STATE -> state = value
+            FBUserDataType.ZIP -> zipCode = value
+            FBUserDataType.COUNTRY -> country = value
+            FBUserDataType.EXTERNAL_ID -> externalId = value
         }
     }
 }

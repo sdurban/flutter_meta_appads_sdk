@@ -86,7 +86,7 @@ class _MyAppState extends State<MyApp> {
                   _flutterMetaAppadsSdkPlugin.logPurchase(
                     FBLogPurchaseCommand(
                       amount: 1,
-                      currency: "USB",
+                      currency: "USD",
                       eventParameter: {
                         "my_parameter": "1234",
                       },

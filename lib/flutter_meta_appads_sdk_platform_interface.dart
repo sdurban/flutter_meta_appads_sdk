@@ -1,9 +1,4 @@
-import 'package:flutter_meta_appads_sdk/proto/fb_anon_id_message.pb.dart';
-import 'package:flutter_meta_appads_sdk/proto/log_event_message.pb.dart';
-import 'package:flutter_meta_appads_sdk/proto/log_purchase_message.pb.dart';
-import 'package:flutter_meta_appads_sdk/proto/log_standard_event_message.pb.dart';
-import 'package:flutter_meta_appads_sdk/proto/set_data_processing_options.pb.dart';
-import 'package:flutter_meta_appads_sdk/proto/set_user_data_message.pb.dart';
+import 'package:flutter_meta_appads_sdk/pigeon_generated.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'flutter_meta_appads_sdk_method_channel.dart';
@@ -34,15 +29,15 @@ abstract class FlutterMetaAppadsSdkPlatform extends PlatformInterface {
     throw UnimplementedError('initSdk() has not been implemented.');
   }
 
-  Future<void> logEvents(FBLogEventMessageRequest request) {
+  Future<void> logEvents(FBLogEventRequest request) {
     throw UnimplementedError('logEvents() has not been implemented.');
   }
 
-  Future<void> logPurchase(FBLogPurchaseMessageRequest request) {
+  Future<void> logPurchase(FBLogPurchaseRequest request) {
     throw UnimplementedError('logPurchase() has not been implemented.');
   }
 
-  Future<void> logStandardEvent(FBLogStandardEventMessageRequest request) {
+  Future<void> logStandardEvent(FBLogStandardEventRequest request) {
     throw UnimplementedError('logStandardEvent() has not been implemented.');
   }
 
@@ -51,7 +46,7 @@ abstract class FlutterMetaAppadsSdkPlatform extends PlatformInterface {
   }
 
   Future<FBAnonIdResponse?> getFbAnonId() {
-    throw UnimplementedError('setUserData() has not been implemented.');
+    throw UnimplementedError('getFbAnonId() has not been implemented.');
   }
 
   Future<void> setAdvertiserTrackingEnabled({required bool isEnabled}) {

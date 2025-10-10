@@ -1,95 +1,60 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_meta_appads_sdk/proto/fb_anon_id_message.pb.dart';
+import 'package:flutter_meta_appads_sdk/pigeon_generated.dart';
 
 import 'flutter_meta_appads_sdk_platform_interface.dart';
-import 'proto/log_event_message.pb.dart';
-import 'proto/log_purchase_message.pb.dart';
-import 'proto/log_standard_event_message.pb.dart';
-import 'proto/set_data_processing_options.pb.dart';
-import 'proto/set_user_data_message.pb.dart';
 
-/// An implementation of [FlutterMetaAppadsSdkPlatform] that uses method channels.
+/// An implementation of [FlutterMetaAppadsSdkPlatform] that uses Pigeon.
 class MethodChannelFlutterMetaAppadsSdk extends FlutterMetaAppadsSdkPlatform {
-  /// The method channel used to interact with the native platform.
+  /// The Pigeon API used to interact with the native platform.
   @visibleForTesting
-  final methodChannel = const MethodChannel('flutter_meta_appads_sdk');
+  final FlutterMetaAppadsSdkHostApi _api = FlutterMetaAppadsSdkHostApi();
 
   @override
   Future<void> initSdk({bool enableLogging = false}) async {
-    await methodChannel.invokeMethod(
-      'initSdk',
-      {
-        "enableLogging": enableLogging,
-      },
-    );
+    await _api.initSdk(enableLogging);
   }
 
   @override
   Future<void> setUserData(FBSetUserDataRequest request) async {
-    await methodChannel.invokeMethod("setUserData", request.writeToBuffer());
+    await _api.setUserData(request);
   }
 
   @override
   Future<void> logStandardEvent(
-      FBLogStandardEventMessageRequest request) async {
-    await methodChannel.invokeMethod(
-        "logStandardEvent", request.writeToBuffer());
+      FBLogStandardEventRequest request) async {
+    await _api.logStandardEvent(request);
   }
 
   @override
-  Future<void> logPurchase(FBLogPurchaseMessageRequest request) async {
-    await methodChannel.invokeMethod("logPurchase", request.writeToBuffer());
+  Future<void> logPurchase(FBLogPurchaseRequest request) async {
+    await _api.logPurchase(request);
   }
 
   @override
-  Future<void> logEvents(FBLogEventMessageRequest request) async {
-    await methodChannel.invokeMethod("logEvents", request.writeToBuffer());
+  Future<void> logEvents(FBLogEventRequest request) async {
+    await _api.logEvents(request);
   }
 
   @override
   Future<FBAnonIdResponse?> getFbAnonId() async {
-    final resultRaw =
-        await methodChannel.invokeMethod<List<int>>('getFbAnonId');
-
-    if (resultRaw != null) {
-      return FBAnonIdResponse.fromBuffer(resultRaw);
-    }
-
-    return null;
+    return await _api.getFbAnonId();
   }
 
   Future<void> setAdvertiserTrackingEnabled({required bool isEnabled}) async {
-    await methodChannel.invokeMethod(
-      "setAdvertiserTrackingEnabled",
-      {
-        "isEnabled": isEnabled,
-      },
-    );
+    await _api.setAdvertiserTrackingEnabled(isEnabled);
   }
 
   Future<void> setAdvertiserIDCollectionEnabled(
       {required bool isEnabled}) async {
-    await methodChannel.invokeMethod(
-      "setAdvertiserIDCollectionEnabled",
-      {
-        "isEnabled": isEnabled,
-      },
-    );
+    await _api.setAdvertiserIDCollectionEnabled(isEnabled);
   }
 
   Future<void> setAutoLogAppEventsEnabled({required bool isEnabled}) async {
-    await methodChannel.invokeMethod(
-      "setAutoLogAppEventsEnabled",
-      {
-        "isEnabled": isEnabled,
-      },
-    );
+    await _api.setAutoLogAppEventsEnabled(isEnabled);
   }
 
   Future<void> setDataProcessingOptions(
       FBSetDataProcessingOptionsRequest request) async {
-    await methodChannel.invokeMethod(
-        "setDataProcessingOptions", request.writeToBuffer());
+    await _api.setDataProcessingOptions(request);
   }
 }

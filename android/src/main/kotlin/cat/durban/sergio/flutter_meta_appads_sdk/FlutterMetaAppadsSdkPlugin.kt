@@ -1,16 +1,10 @@
 package cat.durban.sergio.flutter_meta_appads_sdk
 
-import FBUserData
-import android.app.Activity
+import cat.durban.sergio.flutter_meta_appads_sdk.helper.CurrencyFinder
+import cat.durban.sergio.flutter_meta_appads_sdk.helper.FBUserData
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import cat.durban.sergio.flutter_meta_appads_sdk.proto.FbAnonIdMessage
-import cat.durban.sergio.flutter_meta_appads_sdk.proto.LogEventMessage.FBLogEventMessageRequest
-import cat.durban.sergio.flutter_meta_appads_sdk.proto.LogPurchaseMessage.FBLogPurchaseMessageRequest
-import cat.durban.sergio.flutter_meta_appads_sdk.proto.LogStandardEventMessage.FBLogStandardEventMessageRequest
-import cat.durban.sergio.flutter_meta_appads_sdk.proto.SetUserDataMessage
-import cat.durban.sergio.flutter_meta_appads_sdk.proto.SetDataProcessingOptions
 
 import com.facebook.AccessToken
 import com.facebook.FacebookSdk
@@ -20,168 +14,112 @@ import com.facebook.appevents.AppEventsConstants
 import com.facebook.appevents.AppEventsLogger
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
-import io.flutter.plugin.common.MethodChannel.Result
 import java.util.Currency
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** FlutterMetaAppadsSdkPlugin */
-class FlutterMetaAppadsSdkPlugin: FlutterPlugin, MethodCallHandler {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
-  private lateinit var channel : MethodChannel
+class FlutterMetaAppadsSdkPlugin: FlutterPlugin, FlutterMetaAppadsSdkHostApi {
   private lateinit var eventsLogger: AppEventsLogger
   private var userData: FBUserData = FBUserData
   private lateinit var context: Context
   private var loggingEnabled: Boolean = false
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_meta_appads_sdk")
-    channel.setMethodCallHandler(this)
-    eventsLogger = AppEventsLogger.newLogger(flutterPluginBinding.applicationContext)
     context = flutterPluginBinding.applicationContext
+    eventsLogger = AppEventsLogger.newLogger(flutterPluginBinding.applicationContext)
+    
+    FlutterMetaAppadsSdkHostApi.setUp(flutterPluginBinding.binaryMessenger, this)
   }
 
-  override fun onMethodCall(call: MethodCall, result: Result) {
-    when (call.method) {
-      "initSdk" -> {
-        call.argument<Boolean>("enableLogging")?.let {
-          loggingEnabled = it
-        }
-        if (loggingEnabled) {
-          FacebookSdk.setIsDebugEnabled(true)
-          FacebookSdk.addLoggingBehavior(LoggingBehavior.APP_EVENTS)
-          FacebookSdk.addLoggingBehavior(LoggingBehavior.DEVELOPER_ERRORS)
-        }
+  // MARK: - FlutterMetaAppadsSdkHostApi Implementation
+  
+  override fun initSdk(enableLogging: Boolean) {
+    loggingEnabled = enableLogging
+    
+    if (loggingEnabled) {
+      FacebookSdk.setIsDebugEnabled(true)
+      FacebookSdk.addLoggingBehavior(LoggingBehavior.APP_EVENTS)
+      FacebookSdk.addLoggingBehavior(LoggingBehavior.DEVELOPER_ERRORS)
+    }
 
-        FacebookSdk.setAutoInitEnabled(true)
-        FacebookSdk.fullyInitialize()
+    FacebookSdk.setAutoInitEnabled(true)
+    FacebookSdk.fullyInitialize()
 
-        if (loggingEnabled) {
-          Log.d("FBSDKLog", "Init SDK: ${FacebookSdk.isInitialized()}")
-          Log.d("FBSDKLog", "SDK Version: ${FacebookSdk.getSdkVersion()}")
-          Log.d("FBSDKLog", "AnonymousID: ${AppEventsLogger.getAnonymousAppDeviceGUID(context)}")
-          Log.d("FBSDKLog", "TRACKING ENABLED: ${FacebookSdk.getAdvertiserIDCollectionEnabled()}")
-          Log.d("FBSDKLog", "AUTOMATIC EVENT COLLECTION ENABLED: ${FacebookSdk.getAutoLogAppEventsEnabled()}")
-        }
+    if (loggingEnabled) {
+      Log.d("FBSDKLog", "Init SDK: ${FacebookSdk.isInitialized()}")
+      Log.d("FBSDKLog", "SDK Version: ${FacebookSdk.getSdkVersion()}")
+      Log.d("FBSDKLog", "AnonymousID: ${AppEventsLogger.getAnonymousAppDeviceGUID(context)}")
+      Log.d("FBSDKLog", "TRACKING ENABLED: ${FacebookSdk.getAdvertiserIDCollectionEnabled()}")
+      Log.d("FBSDKLog", "AUTOMATIC EVENT COLLECTION ENABLED: ${FacebookSdk.getAutoLogAppEventsEnabled()}")
+    }
+  }
 
-        result.success(null)
-      }
-      "logEvents" -> {
-        val request = FBLogEventMessageRequest
-          .newBuilder()
-          .mergeFrom(call.arguments as ByteArray)
-          .build()
+  override fun setUserData(request: FBSetUserDataRequest) {
+    setUserDataInternal(request)
+  }
+  
+  override fun logStandardEvent(request: FBLogStandardEventRequest) {
+    logStandardEventInternal(request)
+  }
+  
+  override fun logPurchase(request: FBLogPurchaseRequest) {
+    logPurchaseInternal(request)
+  }
+  
+  override fun logEvents(request: FBLogEventRequest) {
+    logEventInternal(request)
+  }
+  
+  override fun getFbAnonId(): FBAnonIdResponse? {
+    val anonId = AppEventsLogger.getAnonymousAppDeviceGUID(context).toString()
+    return FBAnonIdResponse(fbAnonId = anonId)
+  }
+  
+  override fun setAdvertiserTrackingEnabled(isEnabled: Boolean) {
+    // NOTHING TO DO - EXCLUSIVE iOS FUNCTIONALITY
+  }
+  
+  override fun setAdvertiserIDCollectionEnabled(isEnabled: Boolean) {
+    FacebookSdk.setAdvertiserIDCollectionEnabled(isEnabled)
 
-        logEvent(request)
+    if (loggingEnabled) {
+      Log.d("FBSDKLog", "TRACKING ENABLED: ${FacebookSdk.getAdvertiserIDCollectionEnabled()}")
+    }
+  }
+  
+  override fun setAutoLogAppEventsEnabled(isEnabled: Boolean) {
+    FacebookSdk.setAutoLogAppEventsEnabled(isEnabled)
 
-        result.success(null)
-      }
-      "logPurchase" -> {
-        val request = FBLogPurchaseMessageRequest
-          .newBuilder()
-          .mergeFrom(call.arguments as ByteArray)
-          .build()
+    if (loggingEnabled) {
+      Log.d("FBSDKLog", "AUTOMATIC EVENT COLLECTION ENABLED: ${FacebookSdk.getAutoLogAppEventsEnabled()}")
+    }
+  }
 
-        logPurchase(request)
-
-        result.success(null)
-      }
-      "logStandardEvent" -> {
-        val request = FBLogStandardEventMessageRequest
-          .newBuilder()
-          .mergeFrom(call.arguments as ByteArray)
-          .build()
-
-        logStandardEvent(request)
-
-        result.success(null)
-      }
-      "setUserData" -> {
-        val request = SetUserDataMessage.FBSetUserDataRequest
-          .newBuilder()
-          .mergeFrom(call.arguments as ByteArray)
-          .build()
-
-        setUserData(request)
-
-        result.success(null)
-      }
-      "getFbAnonId" -> {
-        val anonId = AppEventsLogger.getAnonymousAppDeviceGUID(context).toString()
-
-        val data = FbAnonIdMessage.FBAnonIdResponse
-          .newBuilder()
-          .setFbAnonId(anonId)
-          .build()
-
-        result.success(data.toByteArray())
-      }
-      "setAdvertiserTrackingEnabled" -> { /* NOTHING TO DO EXCLUSIVE IOS FUNCTIONALITY */  }
-      "setAdvertiserIDCollectionEnabled" -> {
-        call.argument<Boolean>("isEnabled")?.let {
-          FacebookSdk.setAdvertiserIDCollectionEnabled(it)
-
-          if (loggingEnabled) {
-            Log.d("FBSDKLog", "TRACKING ENABLED: ${FacebookSdk.getAdvertiserIDCollectionEnabled()}")
-          }
-        }
-
-        result.success(null)
-      }
-      "setAutoLogAppEventsEnabled" -> {
-        call.argument<Boolean>("isEnabled")?.let {
-          FacebookSdk.setAutoLogAppEventsEnabled(it)
-
-          if (loggingEnabled) {
-            Log.d("FBSDKLog", "AUTOMATIC EVENT COLLECTION ENABLED: ${FacebookSdk.getAutoLogAppEventsEnabled()}")
-          }
-        }
-
-        result.success(null)
-      }
-      "setDataProcessingOptions" -> {
-        val request = SetDataProcessingOptions.FBSetDataProcessingOptionsRequest
-          .newBuilder()
-          .mergeFrom(call.arguments as ByteArray)
-          .build()
-
-        if (request.hasState() && request.hasCountry()) {
-          FacebookSdk.setDataProcessingOptions(
-            request.modesList.toTypedArray(),
-            request.country,
-            request.state,
-          )
-        } else {
-          FacebookSdk.setDataProcessingOptions(
-            request.modesList.toTypedArray(),
-          )
-        }
-
-        result.success(null)
-      }
-      else -> {
-        result.notImplemented()
-      }
+  override fun setDataProcessingOptions(request: FBSetDataProcessingOptionsRequest) {
+    if (request.country != null && request.state != null) {
+      FacebookSdk.setDataProcessingOptions(
+        request.modes.toTypedArray(),
+        request.country.toInt(),
+        request.state.toInt(),
+      )
+    } else {
+      FacebookSdk.setDataProcessingOptions(
+        request.modes.toTypedArray(),
+      )
     }
   }
 
   override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-    channel.setMethodCallHandler(null)
   }
 
-  private fun logEvent(request: FBLogEventMessageRequest) {
+  private fun logEventInternal(request: FBLogEventRequest) {
     val params = Bundle()
 
-    for (key in request.eventParameterMap.keys) {
-      val value = request.eventParameterMap[key]
+    for (key in request.eventParameters.keys) {
+      val value = request.eventParameters[key]
 
       params.putString(key, value)
     }
@@ -189,19 +127,30 @@ class FlutterMetaAppadsSdkPlugin: FlutterPlugin, MethodCallHandler {
     eventsLogger.logEvent(request.eventName, params)
   }
 
-  private fun logPurchase(request: FBLogPurchaseMessageRequest) {
-    val currency = CurrencyFinder.find(request.currency)
-
-    eventsLogger.logPurchase(request.amount.toBigDecimal(), currency.getOrNull())
+  private fun logPurchaseInternal(request: FBLogPurchaseRequest) {
+    val params = Bundle()
+    
+    for (key in request.eventParameter.keys) {
+      val value = request.eventParameter[key]
+      params.putString(key, value)
+    }
+    
+    val currency = CurrencyFinder.find(request.currency).orElse(null)
+    
+    if (currency != null) {
+      eventsLogger.logPurchase(request.amount.toBigDecimal(), currency, params)
+    } else {
+      Log.e("FlutterMetaAppAdsSdk", "logPurchaseInternal: Currency inválida: ${request.currency}")
+    }
   }
 
-  private fun logStandardEvent(request: FBLogStandardEventMessageRequest) {
-    val eventName = ProtoStandardEventToStandardEvent.convert(request.eventName)
+  private fun logStandardEventInternal(request: FBLogStandardEventRequest) {
+    val eventName = pigeonEnumToEventName(request.eventName)
     if (eventName != null) {
       val params = Bundle()
 
-      for (elm in request.eventParameterList) {
-        val elmKey = ProtoStandardParametersToStandardParameters.convert(elm.parameterName)
+      for (elm in request.parameters) {
+        val elmKey = pigeonEnumToEventParameter(elm.parameterName)
 
         if (elmKey != null) {
           params.putString(elmKey, elm.value)
@@ -212,11 +161,8 @@ class FlutterMetaAppadsSdkPlugin: FlutterPlugin, MethodCallHandler {
     }
   }
 
-  private fun setUserData(request: SetUserDataMessage.FBSetUserDataRequest) {
-    if (request.type == SetUserDataMessage.FBUserDataType.ExternalId) {
-      AppEventsLogger.setUserID(request.value)
-    } else {
-      userData.populateFromProto(request.type, request.value)
+  private fun setUserDataInternal(request: FBSetUserDataRequest) {
+      userData.populateFromPigeon(request.type, request.value)
 
       AppEventsLogger.setUserData(
         userData.email,
@@ -228,8 +174,59 @@ class FlutterMetaAppadsSdkPlugin: FlutterPlugin, MethodCallHandler {
         userData.city,
         userData.state,
         userData.zipCode,
-        userData.country
+        userData.country,
+        userData.externalId
       )
+  }
+  
+  // MARK: - Convert Pigeon enums to SDK Values
+  
+  private fun pigeonEnumToEventName(eventName: FBStandardEvent): String? {
+    return when (eventName) {
+      FBStandardEvent.AD_CLICK -> AppEventsConstants.EVENT_NAME_AD_CLICK
+      FBStandardEvent.AD_IMPRESSION -> AppEventsConstants.EVENT_NAME_AD_IMPRESSION
+      FBStandardEvent.COMPLETED_REGISTRATION -> AppEventsConstants.EVENT_NAME_COMPLETED_REGISTRATION
+      FBStandardEvent.COMPLETED_TUTORIAL -> AppEventsConstants.EVENT_NAME_COMPLETED_TUTORIAL
+      FBStandardEvent.CONTACT -> AppEventsConstants.EVENT_NAME_CONTACT
+      FBStandardEvent.CUSTOMIZE_PRODUCT -> AppEventsConstants.EVENT_NAME_CUSTOMIZE_PRODUCT
+      FBStandardEvent.DONATE -> AppEventsConstants.EVENT_NAME_DONATE
+      FBStandardEvent.FIND_LOCATION -> AppEventsConstants.EVENT_NAME_FIND_LOCATION
+      FBStandardEvent.RATED -> AppEventsConstants.EVENT_NAME_RATED
+      FBStandardEvent.SCHEDULE -> AppEventsConstants.EVENT_NAME_SCHEDULE
+      FBStandardEvent.SEARCHED -> AppEventsConstants.EVENT_NAME_SEARCHED
+      FBStandardEvent.START_TRIAL -> AppEventsConstants.EVENT_NAME_START_TRIAL
+      FBStandardEvent.SUBMIT_APPLICATION -> AppEventsConstants.EVENT_NAME_SUBMIT_APPLICATION
+      FBStandardEvent.SUBSCRIBE -> AppEventsConstants.EVENT_NAME_SUBSCRIBE
+      FBStandardEvent.VIEWED_CONTENT -> AppEventsConstants.EVENT_NAME_VIEWED_CONTENT
+      FBStandardEvent.ADDED_PAYMENT_INFO -> AppEventsConstants.EVENT_NAME_ADDED_PAYMENT_INFO
+      FBStandardEvent.ADDED_TO_CART -> AppEventsConstants.EVENT_NAME_ADDED_TO_CART
+      FBStandardEvent.ADDED_TO_WISHLIST -> AppEventsConstants.EVENT_NAME_ADDED_TO_WISHLIST
+      FBStandardEvent.INITIATED_CHECKOUT -> AppEventsConstants.EVENT_NAME_INITIATED_CHECKOUT
+      FBStandardEvent.PURCHASED -> AppEventsConstants.EVENT_NAME_PURCHASED
+      FBStandardEvent.ACHIEVED_LEVEL -> AppEventsConstants.EVENT_NAME_ACHIEVED_LEVEL
+      FBStandardEvent.UNLOCKED_ACHIEVEMENT -> AppEventsConstants.EVENT_NAME_UNLOCKED_ACHIEVEMENT
+      FBStandardEvent.SPENT_CREDITS -> AppEventsConstants.EVENT_NAME_SPENT_CREDITS
+    }
+  }
+  
+  private fun pigeonEnumToEventParameter(eventParameter: FBStandardParameter): String? {
+    return when (eventParameter) {
+      FBStandardParameter.PARAMETER_NAME_CONTENT -> AppEventsConstants.EVENT_PARAM_CONTENT
+      FBStandardParameter.PARAMETER_NAME_CONTENT_ID -> AppEventsConstants.EVENT_PARAM_CONTENT_ID
+      FBStandardParameter.PARAMETER_NAME_CONTENT_TYPE -> AppEventsConstants.EVENT_PARAM_CONTENT_TYPE
+      FBStandardParameter.PARAMETER_NAME_CURRENCY -> AppEventsConstants.EVENT_PARAM_CURRENCY
+      FBStandardParameter.PARAMETER_NAME_DESCRIPTION -> AppEventsConstants.EVENT_PARAM_DESCRIPTION
+      FBStandardParameter.PARAMETER_NAME_LEVEL -> AppEventsConstants.EVENT_PARAM_LEVEL
+      FBStandardParameter.PARAMETER_NAME_MAX_RATING_VALUE -> AppEventsConstants.EVENT_PARAM_MAX_RATING_VALUE
+      FBStandardParameter.PARAMETER_NAME_NUM_ITEMS -> AppEventsConstants.EVENT_PARAM_NUM_ITEMS
+      FBStandardParameter.PARAMETER_NAME_PAYMENT_INFO_AVAILABLE -> AppEventsConstants.EVENT_PARAM_PAYMENT_INFO_AVAILABLE
+      FBStandardParameter.PARAMETER_NAME_REGISTRATION_METHOD -> AppEventsConstants.EVENT_PARAM_REGISTRATION_METHOD
+      FBStandardParameter.PARAMETER_NAME_SEARCH_STRING -> AppEventsConstants.EVENT_PARAM_SEARCH_STRING
+      FBStandardParameter.PARAMETER_NAME_SUCCESS -> AppEventsConstants.EVENT_PARAM_SUCCESS
+      FBStandardParameter.PARAMETER_NAME_AD_TYPE -> AppEventsConstants.EVENT_PARAM_AD_TYPE
+      FBStandardParameter.PARAMETER_NAME_ORDER_ID -> AppEventsConstants.EVENT_PARAM_ORDER_ID
+      FBStandardParameter.PARAMETER_NAME_EVENT_NAME -> "fb_event_name"
+      FBStandardParameter.PARAMETER_NAME_LOG_TIME -> "fb_log_time"
     }
   }
 }

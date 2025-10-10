@@ -1,8 +1,0 @@
-syntax = "proto3";
-option java_package = "cat.durban.sergio.flutter_meta_appads_sdk.proto";
-
-message FBLogPurchaseMessageRequest {
-  double amount = 1;
-  string currency = 2;
-  map<string, string> eventParameter = 3;
-}
