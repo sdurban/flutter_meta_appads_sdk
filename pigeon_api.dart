@@ -6,7 +6,7 @@ import 'package:pigeon/pigeon.dart';
   kotlinOptions: KotlinOptions(
     package: 'cat.durban.sergio.flutter_meta_appads_sdk',
   ),
-  swiftOut: 'ios/Classes/PigeonGenerated.swift',
+  swiftOut: 'ios/flutter_meta_appads_sdk/Sources/flutter_meta_appads_sdk/PigeonGenerated.swift',
 ))
 
 // Enums para eventos estándar

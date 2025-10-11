@@ -1,3 +1,9 @@
+### 2.1.0
+
+* Added Swift Package Manager (SPM) support for iOS as an alternative to CocoaPods
+* Maintained full backward compatibility with CocoaPods
+* Example project demonstrating SPM integration available in `example_spm/` folder
+
 ### 2.0.1
 
 * Fix missing format on different files (fixinig pub points on pub.dev).
