@@ -36,6 +36,14 @@ Get your *app id* and *client token* from [Meta Developers Panel](https://develo
 <key>FacebookAutoLogAppEventsEnabled</key>
 <false/>
 ```
+
+Note that this setting will be overwritten by a UI toggle located under App Events in the App Dashboard or Events Manager (`developers.facebook.com/apps/[your-facebook-app-id]/settings/basic`).
+(Labeled "Log in-app events automatically")
+
+This toggle is on by default and has to be manually toggled off as well.
+
+Compare the info box under https://developers.facebook.com/docs/app-events/gdpr-compliance.
+
 3. Decide whether you want to disable advertiser identifier tracking by adding this to your Info.plist. Remember, you can later change this setting using the SDK, but having it disabled by default helps you obtain user consent before sending IDs.
 ```xml
 <key>FacebookAdvertiserIDCollectionEnabled</key>
