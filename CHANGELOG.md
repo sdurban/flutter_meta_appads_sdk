@@ -1,3 +1,7 @@
+### 2.1.0+1
+
+* Update readme (thanks @ltOgt)
+
 ### 2.1.0
 
 * Added Swift Package Manager (SPM) support for iOS as an alternative to CocoaPods

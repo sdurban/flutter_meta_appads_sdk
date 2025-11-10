@@ -1,6 +1,6 @@
 name: flutter_meta_appads_sdk
 description: "This Flutter plugin provides a simple interface to interact with the Meta SDK. It allows you to initialize the SDK, set user data (Advanced Attribution), and log events/purchases."
-version: 2.1.0
+version: 2.1.0+1
 homepage: https://github.com/sdurban/flutter_meta_appads_sdk
 repository: https://github.com/sdurban/flutter_meta_appads_sdk
 
