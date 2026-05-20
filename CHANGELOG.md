@@ -5,10 +5,12 @@
   * Captures launch URL info from `scene(_:willConnectTo:options:)` and forwards `scene(_:openURLContexts:)` to the Meta SDK (replacing the legacy `application(_:open:options:)` path on UIScene-based apps).
   * Forwards Universal Links to the Meta SDK from both `application(_:continue:restorationHandler:)` and `scene(_:continue:)` automatically (no AppDelegate changes required).
 * iOS: URL opens that occur **after** `initSdk()` are now forwarded to `FBSDKCoreKit.ApplicationDelegate` immediately (previously only the launch URL was delivered, so attribution-related custom-scheme opens during a running session were dropped). All `UIOpenURLContext` entries delivered in a single `scene(_:openURLContexts:)` call are now processed (previously only the first was used).
+* iOS SPM: Updated `ios/flutter_meta_appads_sdk/Package.swift` to add the generated `FlutterFramework` package dependency when Flutter provides it. This keeps Swift Package Manager builds compatible with Flutter 3.41+ while preserving support for Flutter 3.38.x, where that generated package is not present.
 * Bumped minimum Flutter constraint to `>=3.38.0` (required for `FlutterSceneLifeCycleDelegate` / `addSceneDelegate`).
 * Bumped Meta SDK versions:
   * Android: Facebook SDK 18.1.3 → 18.2.3 (thread-safety fixes in `FetchedAppGateKeepersManager`/`AttributionIdentifiers`, `SecureRandom` replaces `java.util.Random`, deprecated `CookieSyncManager` removed, `Build.VERSION.SDK_INT` guard before AdServices APIs, deep link referrer support). No public API changes.
   * iOS: FBSDKCoreKit 18.0.1 → 18.0.3 (reintroduced fast app switching in 18.0.2, anonymous deferral deeplink support in 18.0.3). No public API changes.
+* Thanks to @Gramatton for contributing the `UIScene` lifecycle support, URL forwarding fixes, Meta SDK updates, and the rest of the 2.2.0 release work in [#7](https://github.com/sdurban/flutter_meta_appads_sdk/pull/7).
 
 ### 2.1.0+1
 
