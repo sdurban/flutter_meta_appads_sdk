@@ -1,13 +1,13 @@
 PODS:
-  - FBAEMKit (18.0.1):
-    - FBSDKCoreKit_Basics (= 18.0.1)
-  - FBSDKCoreKit (18.0.1):
-    - FBAEMKit (= 18.0.1)
-    - FBSDKCoreKit_Basics (= 18.0.1)
-  - FBSDKCoreKit_Basics (18.0.1)
+  - FBAEMKit (18.0.3):
+    - FBSDKCoreKit_Basics (= 18.0.3)
+  - FBSDKCoreKit (18.0.3):
+    - FBAEMKit (= 18.0.3)
+    - FBSDKCoreKit_Basics (= 18.0.3)
+  - FBSDKCoreKit_Basics (18.0.3)
   - Flutter (1.0.0)
   - flutter_meta_appads_sdk (0.0.1):
-    - FBSDKCoreKit (~> 18.0.1)
+    - FBSDKCoreKit (~> 18.0.3)
     - Flutter
   - integration_test (0.0.1):
     - Flutter
@@ -32,12 +32,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/integration_test/ios"
 
 SPEC CHECKSUMS:
-  FBAEMKit: b2ed182002dbcb65d5a60059c9693d322186cd00
-  FBSDKCoreKit: 7f96852f2539bdb88ba8d47e5ab4ae70a6f8d691
-  FBSDKCoreKit_Basics: 22d4c1a509ded4e45116f3bb167a14907550f62e
+  FBAEMKit: 2a6b529993713c185b02bc36f8c91129bf78dfb0
+  FBSDKCoreKit: 65d7f7a7d6fcc3aa6eb6e093ec737a4184fc6049
+  FBSDKCoreKit_Basics: 7bc9d8fde8f70985fba2ed7c1d07e319f969a991
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  flutter_meta_appads_sdk: fd3996b95dfc473e4a8c378c10e094a18c74b1f1
-  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+  flutter_meta_appads_sdk: 17fac193997d817f43cda96b21f397392a2f355e
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
 
 PODFILE CHECKSUM: 4f1c12611da7338d21589c0b2ecd6bd20b109694
 

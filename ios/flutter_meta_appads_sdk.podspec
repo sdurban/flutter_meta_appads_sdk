@@ -14,7 +14,7 @@ Meta SDK for Flutter. This package allow you to integration with Facebook SDK us
 
 
   s.dependency 'Flutter'
-  s.dependency 'FBSDKCoreKit', '~> 18.0.1'
+  s.dependency 'FBSDKCoreKit', '~> 18.0.3'
 
   s.platform = :ios, '13.0'
 
