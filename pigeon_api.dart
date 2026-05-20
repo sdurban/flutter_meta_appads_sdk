@@ -2,11 +2,13 @@ import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(PigeonOptions(
   dartOut: 'lib/pigeon_generated.dart',
-  kotlinOut: 'android/src/main/kotlin/cat/durban/sergio/flutter_meta_appads_sdk/PigeonGenerated.kt',
+  kotlinOut:
+      'android/src/main/kotlin/cat/durban/sergio/flutter_meta_appads_sdk/PigeonGenerated.kt',
   kotlinOptions: KotlinOptions(
     package: 'cat.durban.sergio.flutter_meta_appads_sdk',
   ),
-  swiftOut: 'ios/flutter_meta_appads_sdk/Sources/flutter_meta_appads_sdk/PigeonGenerated.swift',
+  swiftOut:
+      'ios/flutter_meta_appads_sdk/Sources/flutter_meta_appads_sdk/PigeonGenerated.swift',
 ))
 
 // Enums para eventos estándar
@@ -148,22 +150,22 @@ class FBAnonIdResponse {
 @HostApi()
 abstract class FlutterMetaAppadsSdkHostApi {
   void initSdk(bool enableLogging);
-  
+
   void setUserData(FBSetUserDataRequest request);
-  
+
   void logStandardEvent(FBLogStandardEventRequest request);
-  
+
   void logPurchase(FBLogPurchaseRequest request);
-  
+
   void logEvents(FBLogEventRequest request);
-  
+
   FBAnonIdResponse? getFbAnonId();
-  
+
   void setAdvertiserTrackingEnabled(bool isEnabled);
-  
+
   void setAdvertiserIDCollectionEnabled(bool isEnabled);
-  
+
   void setAutoLogAppEventsEnabled(bool isEnabled);
-  
+
   void setDataProcessingOptions(FBSetDataProcessingOptionsRequest request);
 }
