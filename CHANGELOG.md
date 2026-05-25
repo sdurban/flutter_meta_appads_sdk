@@ -1,3 +1,10 @@
+### 2.3.0
+
+* Added Web support using Meta Pixel.
+* Added `initWebPixel(...)` to initialize Meta Pixel from Dart without changing `initSdk()`.
+* Added Web setup documentation for Pixel initialization and event tracking.
+* Documented iOS support for both CocoaPods and Swift Package Manager.
+
 ### 2.2.0
 
 * iOS: Adopted Apple's `UIScene` lifecycle ([Flutter migration guide](https://docs.flutter.dev/release/breaking-changes/uiscenedelegate#migration-guide-for-flutter-plugins)).

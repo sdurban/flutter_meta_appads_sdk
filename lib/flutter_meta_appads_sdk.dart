@@ -29,6 +29,35 @@ class FlutterMetaAppAdsSdk {
         .initSdk(enableLogging: enableLogging);
   }
 
+  /// **Initializes Meta Pixel for Flutter Web.**
+  ///
+  /// This function is only required for web apps that want the plugin to set up
+  /// Meta Pixel from Dart. If your web app already loads the Meta Pixel snippet
+  /// in `web/index.html`, the web implementation can reuse that existing `fbq`
+  /// instance.
+  ///
+  /// **Parameters:**
+  ///   * `pixelId`: Your Meta Pixel ID.
+  ///   * `locale`: The Meta Pixel script locale. Defaults to `en_US`.
+  ///   * `autoLogPageView`: Whether to track `PageView` after initialization.
+  ///
+  /// **Important Notes:**
+  ///   * On Android and iOS this method is a no-op, so it is safe to call from
+  ///     shared code.
+  ///   * If you already track `PageView` from `web/index.html`, set
+  ///     `autoLogPageView` to `false` to avoid duplicate page views.
+  Future<void> initWebPixel({
+    required String pixelId,
+    String locale = 'en_US',
+    bool autoLogPageView = true,
+  }) {
+    return FlutterMetaAppadsSdkPlatform.instance.initWebPixel(
+      pixelId: pixelId,
+      locale: locale,
+      autoLogPageView: autoLogPageView,
+    );
+  }
+
   /// **Sets user data for advanced matching.**
   ///
   /// This function provides user data to the Meta App Ads SDK, enabling more targeted

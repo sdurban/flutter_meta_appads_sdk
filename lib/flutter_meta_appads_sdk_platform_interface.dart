@@ -29,6 +29,12 @@ abstract class FlutterMetaAppadsSdkPlatform extends PlatformInterface {
     throw UnimplementedError('initSdk() has not been implemented.');
   }
 
+  Future<void> initWebPixel({
+    required String pixelId,
+    String locale = 'en_US',
+    bool autoLogPageView = true,
+  }) async {}
+
   Future<void> logEvents(FBLogEventRequest request) {
     throw UnimplementedError('logEvents() has not been implemented.');
   }

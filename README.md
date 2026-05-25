@@ -2,16 +2,24 @@
 
 This Flutter plugin provides a simple interface to interact with the Meta SDK. It allows you to initialize the SDK, set user data, log standard events, log purchases, and log custom events.
 
-## 🚀 Migrated to Pigeon
+## Platform support
 
-This plugin has been migrated from protobuf to [Pigeon](https://pub.dev/packages/pigeon) for better type safety, performance, and maintainability. The public API remains unchanged, ensuring backward compatibility.
+* Android: uses the native Meta SDK.
+* iOS: uses FBSDKCoreKit and supports both CocoaPods and Swift Package Manager.
+* Web: uses Meta Pixel.
+
+### iOS lifecycle support
+
+Starting with `2.2.0`, the iOS plugin supports Apple's `UIScene` lifecycle. It registers itself as both an application delegate and a scene delegate, automatically forwarding custom URL schemes and Universal Links to the Meta SDK without requiring manual `AppDelegate` or `SceneDelegate` changes.
 
 ### Installation
 You must first create an app at Facebook developers: https://developers.facebook.com/
 
-Get your *app id* and *client token* from [Meta Developers Panel](https://developers.facebook.com/apps/).The following are the main steps for integration. *Please use these as a reference and always consult the official documentation* for [iOS integration](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios) and [Android Integration](https://developers.facebook.com/docs/app-events/getting-started-app-events-android#7--add-app-events)
+Get your *app id* and *client token* from [Meta Developers Panel](https://developers.facebook.com/apps/) for mobile integrations, and your *Pixel ID* for web integrations. The following are the main steps for integration. *Please use these as a reference and always consult the official documentation* for [iOS integration](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios), [Android Integration](https://developers.facebook.com/docs/app-events/getting-started-app-events-android#7--add-app-events), and [Meta Pixel](https://developers.facebook.com/docs/meta-pixel/get-started).
 
 #### iOS install
+
+The iOS plugin works with both CocoaPods and Swift Package Manager. Use `example/` as a CocoaPods reference project and `example_spm/` as a Swift Package Manager reference project.
 
 1. Add this snippet to your Info.plist and replace [APP-ID], [CLIENT-TOKEN], and [APP-NAME] with the appropriate values extracted from the Meta panel.
 ```xml
@@ -105,27 +113,53 @@ Compare the info box under https://developers.facebook.com/docs/app-events/gdpr-
 </application>
 ```
 
+#### Web install
+
+The web implementation uses Meta Pixel. The recommended setup is to initialize the Pixel from Dart:
+
+```dart
+final metaSdk = FlutterMetaAppAdsSdk();
+
+await metaSdk.initWebPixel(
+  pixelId: '[PIXEL-ID]',
+);
+```
+
+By default, `initWebPixel` tracks `PageView`. If your app already includes the Meta Pixel base snippet in `web/index.html`, the plugin can reuse the existing `fbq` instance. In that case, avoid tracking `PageView` twice by disabling the automatic `PageView` in one of the setups.
+
+If you use `setUserData(...)` for advanced matching on web, call it before `initWebPixel(...)` so the matching data can be included when Meta Pixel is initialized.
+
+You can also keep the full Meta Pixel snippet in `web/index.html` if you prefer managing Pixel outside Dart. Replace `[PIXEL-ID]` with your Pixel ID and follow the official [Meta Pixel setup guide](https://developers.facebook.com/docs/meta-pixel/get-started).
+
 ### Key features
 
-* Initialization: `initSdk()` sets up the SDK.
+* Platform support:
+  * Full Android support through the native Meta SDK.
+  * Full iOS support through FBSDKCoreKit with both CocoaPods and Swift Package Manager.
+  * Web support through Meta Pixel.
+* Initialization:
+  * `initSdk()` sets up the native mobile SDK.
+  * `initWebPixel(...)` sets up Meta Pixel on web.
 * User Data: `setUserData(FBSetUserDataCommand)` provides user information for targeted ads.
   * **Supported data types**: email, firstName, lastName, phone, dateOfBirth, gender, city, state, zip, country, and **externalId**
-  * **ExternalId support**: Available on both iOS and Android platforms. Use `FBUserDataType.externalId` to set a custom user identifier for advanced matching and cross-device tracking.
+  * **ExternalId support**: Available on iOS, Android, and Web. Use `FBUserDataType.externalId` to set a custom user identifier for advanced matching and cross-device tracking.
 * Event Tracking:
   * `logStandardEvent(FBLogStandardEventCommand)`: Tracks standard events (e.g., level up).
   * `logPurchase(FBLogPurchaseCommand)`: Records purchase events with amount, currency, and additional parameters.
   * `logEvents(FBLogEventCommand)`: Logs custom events.
-* Anonymous ID: `getFbAnonId()` retrieves the Facebook Anonymous ID.
+  * On Web, Meta Pixel standard events are sent with `fbq('track', ...)`; mobile-only standard events without a direct Pixel equivalent are sent as custom Pixel events.
+* Anonymous ID: `getFbAnonId()` retrieves the Facebook Anonymous ID on mobile SDK integrations. This is not available on Web.
 * Tracking permissions:
-  * `setAdvertiserTrackingEnabled(bool)`: This function enables or disables advertiser tracking, controlling whether your app shares user data with Meta for targeted advertising purposes.
-  * `setAdvertiserIDCollectionEnabled(bool)`: _Only for iOS (lower than iOS 17)_ Use with ATT permissions request, set to `True` when user allows and `False` when disallows.
-  * `setAutoLogAppEventsEnabled(bool)`: This function enables or disables automatic logging of common mobile events from the app like app installs, in-app purchases and app launches.
-  * `setDataProcessingOptions(FBSetDataProcessingOptionsCommand)`: This function allows you to configure various data processing options, including data usage and sharing preferences, for the Meta App Ads SDK. Refer to [Meta Documentation](https://developers.facebook.com/docs/app-events/guides/data-processing-options)
+  * `setAdvertiserTrackingEnabled(bool)`: Enables or disables advertiser tracking on mobile. On Web, it maps to Meta Pixel consent (`grant`/`revoke`).
+  * `setAdvertiserIDCollectionEnabled(bool)`: Available on Android and iOS native SDKs. This is a no-op on Web.
+  * `setAutoLogAppEventsEnabled(bool)`: Enables or disables automatic mobile SDK events like app installs, in-app purchases and app launches. On Web, it only controls the automatic `PageView` sent by `initWebPixel(...)`.
+  * `setDataProcessingOptions(FBSetDataProcessingOptionsCommand)`: Configures data processing options on Android, iOS, and Web. Refer to [Meta Documentation](https://developers.facebook.com/docs/app-events/guides/data-processing-options)
 
 ### SDK Versions
 
 * **Android**: Facebook SDK 18.2.3
 * **iOS**: FBSDKCoreKit 18.0.3
+* **Web**: Meta Pixel JavaScript (`fbevents.js`)
 
 ### iOS UIScene lifecycle
 
@@ -136,5 +170,3 @@ This requires Flutter `>=3.38.0`. See the [Flutter UISceneDelegate adoption guid
 ### About Meta SDK
 
 Follow the official Meta SDK guide for correct integration: [Meta App Ads URL](https://developers.facebook.com/docs/app-ads/) . Please [report an issue](https://github.com/sdurban/flutter_meta_appads_sdk/issues) if you find anything is not working according to official documentation.
-
-
