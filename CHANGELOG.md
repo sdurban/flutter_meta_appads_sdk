@@ -1,3 +1,9 @@
+### 2.4.0
+
+* Android: Migrated to [built-in Kotlin](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin) support. The plugin no longer applies the Kotlin Gradle Plugin (KGP) on AGP 9+ hosts, where AGP compiles the Kotlin sources natively.
+* Android: Maintained backward compatibility with hosts on AGP < 9 — the plugin applies KGP only when the host's AGP version is lower than 9, so apps using the legacy KGP setup keep building unchanged, with any KGP version (Kotlin compiler options are configured through each setup's supported DSL: `kotlinOptions` for legacy KGP, `kotlin.compilerOptions {}` for AGP 9+ built-in Kotlin; jvmTarget unchanged at 1.8).
+* Example app: Migrated to AGP 9.1.0, Gradle 9.3.1, and `android.builtInKotlin=true` following the [app migration guide](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers).
+
 ### 2.3.0
 
 * Added Web support using Meta Pixel.
