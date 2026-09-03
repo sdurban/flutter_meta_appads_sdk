@@ -60,6 +60,8 @@ Compare the info box under https://developers.facebook.com/docs/app-events/gdpr-
 
 #### Android Install
 
+> **Gradle compatibility:** this plugin supports AGP 9+ [built-in Kotlin](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin) (no Kotlin Gradle Plugin required) and remains compatible with apps on AGP < 9 using the legacy Kotlin Gradle Plugin setup. No Gradle changes are needed in your app.
+
 1. Add the following meta-data elements within the application element in your `android/app/src/main/AndroidManifest.xml` file to specify your app ID and client access ID:
 ```xml
 <application android:label="string/app_name">

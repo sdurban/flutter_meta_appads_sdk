@@ -22,7 +22,16 @@ allprojects {
 }
 
 apply plugin: "com.android.library"
-apply plugin: "kotlin-android"
+
+// Built-in Kotlin support: AGP 9+ compiles Kotlin sources natively, so the
+// Kotlin Gradle Plugin (KGP) must not be applied there. On AGP < 9 hosts,
+// keep applying KGP for backward compatibility.
+// Applied via pluginManager (instead of `apply plugin:`) so the Flutter tool
+// does not report this plugin as an unconditional KGP user on AGP 9+ builds.
+def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0] as int
+if (agpMajor < 9) {
+    pluginManager.apply("org.jetbrains.kotlin.android")
+}
 
 android {
     if (project.android.hasProperty("namespace")) {
@@ -36,8 +45,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+    // kotlinOptions only exists when KGP is applied (AGP < 9 branch above).
+    // It is supported by every legacy KGP version, unlike the compilerOptions
+    // DSL which requires KGP 2.0+.
+    if (agpMajor < 9) {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
     }
 
     sourceSets {
@@ -64,6 +78,16 @@ android {
                outputs.upToDateWhen {false}
                showStandardStreams = true
             }
+        }
+    }
+}
+
+// On AGP 9+ the kotlin extension is provided by AGP's built-in Kotlin support,
+// which only exposes the compilerOptions DSL (KGP 2.x API).
+if (agpMajor >= 9) {
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
         }
     }
 }
