@@ -9,7 +9,7 @@ let flutterFrameworkPath = packageDirectory.appendingPathComponent("../FlutterFr
 let hasFlutterFrameworkPackage = FileManager.default.fileExists(atPath: flutterFrameworkPath)
 
 var packageDependencies: [Package.Dependency] = [
-    .package(url: "https://github.com/facebook/facebook-ios-sdk.git", from: "18.0.3")
+    .package(url: "https://github.com/facebook/facebook-ios-sdk.git", from: "18.0.2")
 ]
 
 var targetDependencies: [Target.Dependency] = [

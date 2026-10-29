@@ -160,7 +160,7 @@ You can also keep the full Meta Pixel snippet in `web/index.html` if you prefer 
 ### SDK Versions
 
 * **Android**: Facebook SDK 18.2.3
-* **iOS**: FBSDKCoreKit 18.0.3
+* **iOS**: FBSDKCoreKit 18.x (`>= 18.0.2, < 19.0`; 18.0.3 or newer recommended)
 * **Web**: Meta Pixel JavaScript (`fbevents.js`)
 
 ### iOS UIScene lifecycle
