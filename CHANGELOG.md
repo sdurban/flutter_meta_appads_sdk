@@ -1,3 +1,7 @@
+### 2.4.1
+
+* iOS: Widened the `FBSDKCoreKit` requirement from `~> 18.0.3` (>= 18.0.3, < 18.1) to `>= 18.0.2, < 19.0` in the podspec, and lowered the Swift Package Manager minimum to `18.0.2` (the upper bound there was already `< 19.0.0`). The plugin only calls APIs that exist across all of 18.x, so this lets CocoaPods resolve alongside plugins that pin an exact Facebook SDK version, such as `flutter_facebook_auth` (`FBSDKLoginKit` 18.0.2 in 7.1.x–7.2.0, 18.1.1 in 7.3.x). Apps that can resolve 18.0.3 or newer still get it.
+
 ### 2.4.0
 
 * Android: Migrated to [built-in Kotlin](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin) support. The plugin no longer applies the Kotlin Gradle Plugin (KGP) on AGP 9+ hosts, where AGP compiles the Kotlin sources natively.
