@@ -1,5 +1,7 @@
 import 'dart:async';
 
+// Keep the SDK import to support the plugin's minimum Flutter version.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter_meta_appads_sdk/flutter_meta_appads_sdk.dart';
 
@@ -25,7 +27,7 @@ class _MyAppState extends State<MyApp> {
           appBar: AppBar(
             title: const Text('Plugin example app'),
           ),
-          body: Column(
+          body: ListView(
             children: [
               ElevatedButton(
                 onPressed: () => unawaited(

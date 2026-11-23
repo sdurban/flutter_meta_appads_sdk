@@ -46,7 +46,7 @@ public class FlutterMetaAppadsSdkPlugin: NSObject, FlutterPlugin, FlutterSceneLi
     public func application(
         _ application: UIApplication,
         continue userActivity: NSUserActivity,
-        restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+        restorationHandler: @escaping ([Any]) -> Void
     ) -> Bool {
         ApplicationDelegate.shared.application(application, continue: userActivity)
 

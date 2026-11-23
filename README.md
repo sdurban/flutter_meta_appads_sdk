@@ -4,13 +4,29 @@ This Flutter plugin provides a simple interface to interact with the Meta SDK. I
 
 ## Platform support
 
-* Android: uses the native Meta SDK.
-* iOS: uses FBSDKCoreKit and supports both CocoaPods and Swift Package Manager.
+* Android: API 24+; uses the native Meta SDK.
+* iOS: iOS 15.0+; uses FBSDKCoreKit and supports both CocoaPods and Swift Package Manager.
 * Web: uses Meta Pixel.
+
+### Flutter compatibility
+
+Version `3.0.0` is validated with **Flutter 3.50.1 / Dart 3.14.0**. The plugin's minimum Flutter requirement remains `>=3.38.0`.
+
+Both example apps use **AGP 9.1.1 / Gradle 9.3.1** with built-in Kotlin to meet Flutter 3.50's Android build requirements. The plugin also retains its legacy Kotlin Gradle Plugin setup for apps using older Flutter releases with AGP < 9.
 
 ### iOS lifecycle support
 
 Starting with `2.2.0`, the iOS plugin supports Apple's `UIScene` lifecycle. It registers itself as both an application delegate and a scene delegate, automatically forwarding custom URL schemes and Universal Links to the Meta SDK without requiring manual `AppDelegate` or `SceneDelegate` changes.
+
+### Migrating to 3.0.0
+
+Version `3.0.0` upgrades both native Meta SDKs to `19.0.1`. The Dart API is unchanged. Flutter `>=3.38.0` and Android API 24+ are still required.
+
+* **iOS 15.0 is now required** by Meta SDK 19. Set your app and extension deployment targets to at least `15.0`; for CocoaPods, also set `platform :ios, '15.0'` in `ios/Podfile` and follow the CocoaPods setup below.
+* Both CocoaPods and Swift Package Manager require Meta SDK `>=19.0.1, <20.0.0`. Other plugins using Facebook SDK components must allow a compatible version in that range. Apps that still require iOS 13–14 or Meta SDK 18 should stay on plugin `2.4.1`.
+* With Meta SDK 19, explicitly disabling automatic app events locally takes precedence over enabling them in Events Manager. Review the separate metadata and product improvement settings shown below; both default to enabled.
+
+See the upstream [iOS release notes](https://github.com/meta/facebook-ios-sdk/blob/v19.0.1/CHANGELOG.md) and [Android release notes](https://github.com/meta/facebook-android-sdk/blob/sdk-version-19.0.1/CHANGELOG.md) for the native SDK changes.
 
 ### Installation
 You must first create an app at Facebook developers: https://developers.facebook.com/
@@ -19,7 +35,19 @@ Get your *app id* and *client token* from [Meta Developers Panel](https://develo
 
 #### iOS install
 
-The iOS plugin works with both CocoaPods and Swift Package Manager. Use `example/` as a CocoaPods reference project and `example_spm/` as a Swift Package Manager reference project.
+The iOS plugin works with both CocoaPods and Swift Package Manager. Swift Package Manager is recommended for new integrations. Use `example/` as a CocoaPods reference project and `example_spm/` as a Swift Package Manager reference project.
+
+**CocoaPods 19.0.1 availability:** As of November 22, 2026, Meta has released 19.0.1 on GitHub, but CocoaPods trunk still lists 19.0.0. The [CocoaPods read-only plan](https://blog.cocoapods.org/CocoaPods-Specs-Repo/) schedules the end of new trunk publications for December 2, 2026. CocoaPods users can install 19.0.1 directly by adding the following inside the `target 'Runner' do` block in `ios/Podfile`. These official release podspecs download Meta's prebuilt XCFrameworks and verify their checksum without requiring publication to trunk:
+
+```ruby
+%w[FBSDKCoreKit FBSDKCoreKit_Basics FBAEMKit].each do |name|
+  pod name, :podspec => "https://raw.githubusercontent.com/meta/facebook-ios-sdk/v19.0.1/#{name}.podspec"
+end
+```
+
+Run `flutter pub get` from your app directory, then `pod update FBSDKCoreKit FBSDKCoreKit_Basics FBAEMKit` from `ios/` (or `pod install` for a fresh installation). Keep these declarations while using 19.0.1 through CocoaPods. Swift Package Manager resolves the GitHub release directly and needs no override.
+
+With Xcode 27+, also apply the `post_install` deployment-target adjustment in [the example Podfile](example/ios/Podfile) if Flutter or another pod still declares a target below iOS 15.0.
 
 1. Add this snippet to your Info.plist and replace [APP-ID], [CLIENT-TOKEN], and [APP-NAME] with the appropriate values extracted from the Meta panel.
 ```xml
@@ -45,12 +73,7 @@ The iOS plugin works with both CocoaPods and Swift Package Manager. Use `example
 <false/>
 ```
 
-Note that this setting will be overwritten by a UI toggle located under App Events in the App Dashboard or Events Manager (`developers.facebook.com/apps/[your-facebook-app-id]/settings/basic`).
-(Labeled "Log in-app events automatically")
-
-This toggle is on by default and has to be manually toggled off as well.
-
-Compare the info box under https://developers.facebook.com/docs/app-events/gdpr-compliance.
+With Meta SDK 19, setting `FacebookAutoLogAppEventsEnabled` to `false` disables automatic app events even when they are enabled in Events Manager.
 
 3. Decide whether you want to disable advertiser identifier tracking by adding this to your Info.plist. Remember, you can later change this setting using the SDK, but having it disabled by default helps you obtain user consent before sending IDs.
 ```xml
@@ -58,9 +81,17 @@ Compare the info box under https://developers.facebook.com/docs/app-events/gdpr-
 <false/>
 ```
 
+4. Meta SDK 19 adds separate settings for additional event metadata (such as screen titles and AppLink URLs) and product improvement information. Both default to enabled and are independent of automatic app event logging. To disable them, add:
+```xml
+<key>FBSDKAutoLogMetaDataEnabled</key>
+<false/>
+<key>FBSDKAutoLogProductImprovementEnabled</key>
+<false/>
+```
+
 #### Android Install
 
-> **Gradle compatibility:** this plugin supports AGP 9+ [built-in Kotlin](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin) (no Kotlin Gradle Plugin required) and remains compatible with apps on AGP < 9 using the legacy Kotlin Gradle Plugin setup. No Gradle changes are needed in your app.
+> **Gradle compatibility:** this plugin supports AGP 9+ [built-in Kotlin](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin) (no Kotlin Gradle Plugin required) and remains compatible with apps on AGP < 9 using the legacy Kotlin Gradle Plugin setup. Use build tool versions supported by your Flutter release; the examples use AGP 9.1.1 and Gradle 9.3.1 for Flutter 3.50.
 
 1. Add the following meta-data elements within the application element in your `android/app/src/main/AndroidManifest.xml` file to specify your app ID and client access ID:
 ```xml
@@ -96,6 +127,8 @@ Compare the info box under https://developers.facebook.com/docs/app-events/gdpr-
   ...
 </application>
 ```
+With Meta SDK 19, setting `com.facebook.sdk.AutoLogAppEventsEnabled` to `false` disables automatic app events even when they are enabled in Events Manager.
+
 5. Decide if your SDK will start on app startup or via `initSdk()` method adding the following code to your `android/app/src/main/AndroidManifest.xml` (having it disabled by default helps you obtain user consent before sending):
 ```xml
 <application>
@@ -113,6 +146,14 @@ Compare the info box under https://developers.facebook.com/docs/app-events/gdpr-
            android:value="false"/>
   ...
 </application>
+```
+
+7. To disable the separate metadata and product improvement settings introduced in Meta SDK 19, add these entries inside `<application>`. Both settings default to enabled and are independent of automatic app event logging.
+```xml
+<meta-data android:name="com.facebook.sdk.AutoLogMetaDataEnabled"
+           android:value="false"/>
+<meta-data android:name="com.facebook.sdk.AutoLogProductImprovementEnabled"
+           android:value="false"/>
 ```
 
 #### Web install
@@ -159,8 +200,8 @@ You can also keep the full Meta Pixel snippet in `web/index.html` if you prefer 
 
 ### SDK Versions
 
-* **Android**: Facebook SDK 18.2.3
-* **iOS**: FBSDKCoreKit 18.x (`>= 18.0.2, < 19.0`; 18.0.3 or newer recommended)
+* **Android**: Facebook SDK 19.0.1
+* **iOS**: FBSDKCoreKit 19.x (`>= 19.0.1, < 20.0.0`) through CocoaPods or Swift Package Manager
 * **Web**: Meta Pixel JavaScript (`fbevents.js`)
 
 ### iOS UIScene lifecycle

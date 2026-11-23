@@ -3,10 +3,10 @@
     {
       "identity" : "facebook-ios-sdk",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/facebook/facebook-ios-sdk.git",
+      "location" : "https://github.com/meta/facebook-ios-sdk.git",
       "state" : {
-        "revision" : "a77ba210bf6534564ad4027fce2fef65babfadf8",
-        "version" : "18.0.1"
+        "revision" : "7c3fb7856063fa1074d330616f4070f2ed10a49b",
+        "version" : "19.0.1"
       }
     }
   ],

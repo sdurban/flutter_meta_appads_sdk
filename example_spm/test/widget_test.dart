@@ -1,27 +1,47 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
+import 'package:flutter_meta_appads_sdk/flutter_meta_appads_sdk_platform_interface.dart';
+import 'package:flutter_meta_appads_sdk/pigeon_generated.dart';
+import 'package:flutter_meta_appads_sdk_example/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_meta_appads_sdk_example/main.dart';
-
 void main() {
-  testWidgets('Verify Platform version', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  late FlutterMetaAppadsSdkPlatform originalPlatform;
+
+  setUp(() {
+    originalPlatform = FlutterMetaAppadsSdkPlatform.instance;
+    FlutterMetaAppadsSdkPlatform.instance = _TestPlatform();
+  });
+
+  tearDown(() {
+    FlutterMetaAppadsSdkPlatform.instance = originalPlatform;
+  });
+
+  testWidgets('SDK controls remain accessible on a small screen',
+      (tester) async {
     await tester.pumpWidget(const MyApp());
 
-    // Verify that platform version is retrieved.
-    expect(
-      find.byWidgetPredicate(
-        (Widget widget) =>
-            widget is Text && widget.data!.startsWith('Running on:'),
-      ),
-      findsOneWidget,
+    expect(find.text('Init SDK'), findsOneWidget);
+    final lastAction = find.text(
+      'setDataProcessingOptions - LDU automatic geolocation',
     );
+    await tester.scrollUntilVisible(lastAction, 200);
+    expect(lastAction.hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
+
+  testWidgets('retrieves and displays the anonymous ID', (tester) async {
+    await tester.pumpWidget(const MyApp());
+
+    expect(find.text('FB ANON ID: Not retrieved AnonId'), findsOneWidget);
+    await tester.tap(find.text('Get FB AnonId'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('FB ANON ID: test-anonymous-id'), findsOneWidget);
+  });
+}
+
+class _TestPlatform extends FlutterMetaAppadsSdkPlatform {
+  @override
+  Future<FBAnonIdResponse?> getFbAnonId() async {
+    return FBAnonIdResponse(fbAnonId: 'test-anonymous-id');
+  }
 }
