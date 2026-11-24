@@ -9,7 +9,7 @@ let flutterFrameworkPath = packageDirectory.appendingPathComponent("../FlutterFr
 let hasFlutterFrameworkPackage = FileManager.default.fileExists(atPath: flutterFrameworkPath)
 
 var packageDependencies: [Package.Dependency] = [
-    .package(url: "https://github.com/facebook/facebook-ios-sdk.git", from: "18.0.2")
+    .package(url: "https://github.com/meta/facebook-ios-sdk.git", "19.0.0"..."19.0.1")
 ]
 
 var targetDependencies: [Target.Dependency] = [
@@ -24,7 +24,7 @@ if hasFlutterFrameworkPackage {
 let package = Package(
     name: "flutter_meta_appads_sdk",
     platforms: [
-        .iOS(.v13)
+        .iOS("15.0")
     ],
     products: [
         .library(

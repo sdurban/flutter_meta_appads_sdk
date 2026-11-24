@@ -1,5 +1,4 @@
-# Uncomment this line to define a global platform for your project
-# platform :ios, '13.0'
+platform :ios, '15.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -31,6 +30,13 @@ target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
+  # CocoaPods trunk only has Meta 19.0.0. Use the official 19.0.1 release
+  # podspecs, which download and verify Meta's prebuilt XCFrameworks.
+  # Add any other FBSDK* pod your app uses (e.g. FBSDKLoginKit) to this list.
+  %w[FBSDKCoreKit FBSDKCoreKit_Basics FBAEMKit].each do |name|
+    pod name, :podspec => "https://raw.githubusercontent.com/meta/facebook-ios-sdk/v19.0.1/#{name}.podspec"
+  end
+
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
     inherit! :search_paths
@@ -39,6 +45,14 @@ end
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
+    # Both Flutter's helper and the check below need an iOS deployment target.
+    next unless target.platform_name == :ios && target.deployment_target
     flutter_additional_ios_build_settings(target)
+    # Xcode 27 requires iOS 15+ for every target, including Flutter's pod.
+    if Gem::Version.new(target.deployment_target) < Gem::Version.new('15.0')
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+      end
+    end
   end
 end

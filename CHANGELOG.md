@@ -1,3 +1,22 @@
+### 3.0.0
+
+* **BREAKING CHANGE (iOS)**: Raised the minimum deployment target from iOS 13.0 to **iOS 15.0**, as required by Meta SDK 19. Update app/extension deployment targets and the CocoaPods `platform` setting before upgrading.
+* Upgraded the native Meta SDKs:
+  * Android: Facebook SDK 18.2.3 → **19.0.1**. Includes fixes for automatic purchase logging with Google Play Billing Library 8. Android API 24+ and existing AGP/Kotlin compatibility are unchanged.
+  * iOS: FBSDKCoreKit **>= 19.0.0, <= 19.0.1** (tested with 19.0.1; 19.0.0 is allowed because it is the latest version in CocoaPods trunk) in both CocoaPods and Swift Package Manager. Plugins requiring Facebook SDK 18.x must be upgraded together or remain on plugin 2.4.1.
+* **iOS anonymous ID timing differs between 19.0.0 and 19.0.1**: with FBSDKCoreKit 19.0.0, Meta creates the anonymous ID at app launch; 19.0.1 reverts this and creates it the first time App Events is used. Swift Package Manager resolves 19.0.1 unless another package pins 19.0.0. CocoaPods installs 19.0.0 unless the app adds the 19.0.1 release podspecs described in the README. Apps that delay the Meta SDK until the user consents should use 19.0.1 and check the resolved version in `Podfile.lock` or `Package.resolved`.
+* Updated the Swift Package Manager repository URL to `https://github.com/meta/facebook-ios-sdk.git` following Meta's repository move.
+* CocoaPods: 19.0.1 is unavailable in trunk, which only lists 19.0.0 and stops accepting new versions on December 2, 2026. The installation guide and the CocoaPods example show how to install 19.0.1 through Meta's official release podspecs, including any other FBSDK pod the app uses (such as `FBSDKLoginKit`) so all of them resolve to the same version. Use this override only with CocoaPods, not with Swift Package Manager. Swift Package Manager is the recommended iOS integration.
+* Documented Meta SDK 19 behavior: disabling automatic app events locally now takes precedence over Events Manager, and additional metadata/product improvement have separate settings enabled by default.
+* Updated both example apps to iOS 15.0 and refreshed their dependency locks.
+* CocoaPods example: Removed stale Swift Package Manager references to avoid linking both integrations, and raised iOS pod deployment targets below iOS 15.0 for Xcode 27 compatibility.
+* iOS CocoaPods: Fixed the privacy manifest resource path to include `Resources/PrivacyInfo.xcprivacy`.
+* The public Dart API and Web/Meta Pixel integration are unchanged.
+* Validated with Flutter **3.50.1 / Dart 3.14.0** while preserving the plugin's Flutter `>=3.38.0` constraint. The example apps' lockfiles are generated with Flutter 3.50.1.
+* Updated both Android examples to AGP **9.1.1**, Gradle **9.3.1**, and built-in Kotlin to meet Flutter 3.50's build requirements.
+* Fixed example screens overflowing on smaller displays, and replaced stale example tests in both examples: the Dart widget tests check SDK controls on a phone-sized screen and anonymous ID retrieval, and the native `RunnerTests`, which still called the removed method-channel API and did not compile, now check the plugin's application lifecycle callbacks.
+* iOS: Corrected the legacy Universal Link callback's restoration handler type to match Flutter's lifecycle protocol, preserving Objective-C callback registration on Flutter 3.38 and newer.
+
 ### 2.4.1
 
 * iOS: Widened the `FBSDKCoreKit` requirement from `~> 18.0.3` (>= 18.0.3, < 18.1) to `>= 18.0.2, < 19.0` in the podspec, and lowered the Swift Package Manager minimum to `18.0.2` (the upper bound there was already `< 19.0.0`). The plugin only calls APIs that exist across all of 18.x, so this lets CocoaPods resolve alongside plugins that pin an exact Facebook SDK version, such as `flutter_facebook_auth` (`FBSDKLoginKit` 18.0.2 in 7.1.x–7.2.0, 18.1.1 in 7.3.x). Apps that can resolve 18.0.3 or newer still get it.
