@@ -7,7 +7,7 @@ PODS:
   - FBSDKCoreKit_Basics (19.0.1)
   - Flutter (1.0.0)
   - flutter_meta_appads_sdk (0.0.1):
-    - FBSDKCoreKit (< 20.0, >= 19.0.1)
+    - FBSDKCoreKit (<= 19.0.1, >= 19.0.0)
     - Flutter
   - integration_test (0.0.1):
     - Flutter
@@ -39,9 +39,9 @@ SPEC CHECKSUMS:
   FBSDKCoreKit: 4bb9360f6a3179d5e7ff986f62a902e2bbff2d7e
   FBSDKCoreKit_Basics: 190a2d440bd0de5bd6ae547f64c7432a140f8648
   Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
-  flutter_meta_appads_sdk: 5ecf506cd1c4cd611213724cf2ac955c8f11a045
+  flutter_meta_appads_sdk: 826c2e1e1bf0b628302c341a7a38e5e13101db6e
   integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
 
-PODFILE CHECKSUM: 80580342e930d32ac23568ca6489aadaf76b162b
+PODFILE CHECKSUM: 434f0d4ad7dee2b650728c95a149fc0c695f2282
 
 COCOAPODS: 1.17.0

@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_meta_appads_sdk/flutter_meta_appads_sdk_platform_interface.dart';
 import 'package:flutter_meta_appads_sdk/pigeon_generated.dart';
 import 'package:flutter_meta_appads_sdk_example/main.dart';
@@ -17,6 +18,10 @@ void main() {
 
   testWidgets('SDK controls remain accessible on a small screen',
       (tester) async {
+    tester.view.physicalSize = const Size(320, 568);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
     await tester.pumpWidget(const MyApp());
 
     expect(find.text('Init SDK'), findsOneWidget);

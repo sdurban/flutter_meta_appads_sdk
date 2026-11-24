@@ -10,7 +10,7 @@ This Flutter plugin provides a simple interface to interact with the Meta SDK. I
 
 ### Flutter compatibility
 
-Version `3.0.0` is validated with **Flutter 3.50.1 / Dart 3.14.0**. The plugin's minimum Flutter requirement remains `>=3.38.0`.
+Version `3.0.0` is validated with **Flutter 3.50.1 / Dart 3.14.0**. The plugin's minimum Flutter requirement remains `>=3.38.0`. The example apps and their committed `pubspec.lock` files target Flutter 3.50.1; with an older Flutter release, `flutter pub get` updates the example lockfiles.
 
 Both example apps use **AGP 9.1.1 / Gradle 9.3.1** with built-in Kotlin to meet Flutter 3.50's Android build requirements. The plugin also retains its legacy Kotlin Gradle Plugin setup for apps using older Flutter releases with AGP < 9.
 
@@ -20,10 +20,11 @@ Starting with `2.2.0`, the iOS plugin supports Apple's `UIScene` lifecycle. It r
 
 ### Migrating to 3.0.0
 
-Version `3.0.0` upgrades both native Meta SDKs to `19.0.1`. The Dart API is unchanged. Flutter `>=3.38.0` and Android API 24+ are still required.
+Version `3.0.0` upgrades the native Meta SDKs to version 19: Android uses `19.0.1`, and iOS accepts `19.0.0` or `19.0.1`. The Dart API is unchanged. Flutter `>=3.38.0` and Android API 24+ are still required.
 
 * **iOS 15.0 is now required** by Meta SDK 19. Set your app and extension deployment targets to at least `15.0`; for CocoaPods, also set `platform :ios, '15.0'` in `ios/Podfile` and follow the CocoaPods setup below.
-* Both CocoaPods and Swift Package Manager require Meta SDK `>=19.0.1, <20.0.0`. Other plugins using Facebook SDK components must allow a compatible version in that range. Apps that still require iOS 13–14 or Meta SDK 18 should stay on plugin `2.4.1`.
+* On iOS, both CocoaPods and Swift Package Manager accept FBSDKCoreKit `>=19.0.0, <=19.0.1`. This release was tested with 19.0.1; 19.0.0 is also allowed because it is the latest version in CocoaPods trunk. Other plugins using Facebook SDK components must resolve to a version in that range. Apps that still require iOS 13–14 or Meta SDK 18 should stay on plugin `2.4.1`.
+* **Anonymous ID timing differs between iOS 19.0.0 and 19.0.1.** With FBSDKCoreKit 19.0.0, Meta creates the anonymous ID at app launch; 19.0.1 reverts this and creates it the first time App Events is used. Swift Package Manager resolves 19.0.1 unless another package pins 19.0.0. CocoaPods installs 19.0.0 unless you add the 19.0.1 podspecs described in [iOS install](#ios-install). If your app delays the Meta SDK until the user consents, use 19.0.1 and check the resolved version in `Podfile.lock` or `Package.resolved`.
 * With Meta SDK 19, explicitly disabling automatic app events locally takes precedence over enabling them in Events Manager. Review the separate metadata and product improvement settings shown below; both default to enabled.
 
 See the upstream [iOS release notes](https://github.com/meta/facebook-ios-sdk/blob/v19.0.1/CHANGELOG.md) and [Android release notes](https://github.com/meta/facebook-android-sdk/blob/sdk-version-19.0.1/CHANGELOG.md) for the native SDK changes.
@@ -37,15 +38,19 @@ Get your *app id* and *client token* from [Meta Developers Panel](https://develo
 
 The iOS plugin works with both CocoaPods and Swift Package Manager. Swift Package Manager is recommended for new integrations. Use `example/` as a CocoaPods reference project and `example_spm/` as a Swift Package Manager reference project.
 
-**CocoaPods 19.0.1 availability:** As of November 22, 2026, Meta has released 19.0.1 on GitHub, but CocoaPods trunk still lists 19.0.0. The [CocoaPods read-only plan](https://blog.cocoapods.org/CocoaPods-Specs-Repo/) schedules the end of new trunk publications for December 2, 2026. CocoaPods users can install 19.0.1 directly by adding the following inside the `target 'Runner' do` block in `ios/Podfile`. These official release podspecs download Meta's prebuilt XCFrameworks and verify their checksum without requiring publication to trunk:
+**CocoaPods and Meta SDK 19.0.1:** CocoaPods trunk only lists FBSDKCoreKit 19.0.0, and the [CocoaPods read-only plan](https://blog.cocoapods.org/CocoaPods-Specs-Repo/) stops new trunk publications on December 2, 2026, so 19.0.1 may never be published there. Without any Podfile changes, CocoaPods installs 19.0.0. To use 19.0.1 (recommended; see the anonymous ID note in [Migrating to 3.0.0](#migrating-to-300)), add the following inside the `target 'Runner' do` block in `ios/Podfile`. These official release podspecs download Meta's prebuilt XCFrameworks and verify their checksum without requiring publication to trunk:
 
 ```ruby
+# Add every other FBSDK* pod your app uses, e.g. FBSDKLoginKit or FBSDKShareKit.
 %w[FBSDKCoreKit FBSDKCoreKit_Basics FBAEMKit].each do |name|
   pod name, :podspec => "https://raw.githubusercontent.com/meta/facebook-ios-sdk/v19.0.1/#{name}.podspec"
 end
 ```
 
-Run `flutter pub get` from your app directory, then `pod update FBSDKCoreKit FBSDKCoreKit_Basics FBAEMKit` from `ios/` (or `pod install` for a fresh installation). Keep these declarations while using 19.0.1 through CocoaPods. Swift Package Manager resolves the GitHub release directly and needs no override.
+* Meta's pods require the exact same version of each other. If your app also uses another FBSDK pod (for example `FBSDKLoginKit` through `flutter_facebook_auth`), add it to the list; otherwise it resolves from trunk at 19.0.0 and `pod install` fails with a version conflict. If another plugin pins an exact 19.0.0 pod, leave this override out and CocoaPods resolves everything at 19.0.0.
+* Only add this override when the plugin is integrated through CocoaPods. If Swift Package Manager is enabled for your app, the plugin and the Meta SDK come from Swift Package Manager, and these pods would link a second copy of the SDK.
+
+Run `flutter pub get` from your app directory, then `pod update FBSDKCoreKit FBSDKCoreKit_Basics FBAEMKit` (plus any other FBSDK pod you added) from `ios/`, or `pod install` for a fresh installation. Swift Package Manager resolves the GitHub release directly and needs no override.
 
 With Xcode 27+, also apply the `post_install` deployment-target adjustment in [the example Podfile](example/ios/Podfile) if Flutter or another pod still declares a target below iOS 15.0.
 
@@ -201,7 +206,7 @@ You can also keep the full Meta Pixel snippet in `web/index.html` if you prefer 
 ### SDK Versions
 
 * **Android**: Facebook SDK 19.0.1
-* **iOS**: FBSDKCoreKit 19.x (`>= 19.0.1, < 20.0.0`) through CocoaPods or Swift Package Manager
+* **iOS**: FBSDKCoreKit 19.0.0–19.0.1 (`>= 19.0.0, <= 19.0.1`) through CocoaPods or Swift Package Manager; 19.0.1 recommended
 * **Web**: Meta Pixel JavaScript (`fbevents.js`)
 
 ### iOS UIScene lifecycle
